@@ -15,6 +15,11 @@ const defaultNav = [
   { label: "Groceries", caret: true, href: "#" },
   { label: "Today's Deals", caret: false, href: "#" },
   { label: "Registry", caret: false, href: "#" },
+  { label: "Orders", caret: false, href: "#" },
+  { label: "Returns", caret: false, href: "#" },
+  { label: "Track Orders", caret: false, href: "#" },
+
+
 ]
 
 export default function SovoHeader({ navItems = defaultNav }) {
