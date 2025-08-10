@@ -10,7 +10,7 @@ const defaultNav = [
   { label: "Medical Care", caret: true, href: "#" },
   { label: "Luxury", caret: false, href: "#" },
   { label: "Best Sellers", caret: false, href: "#" },
-  { label: "Amazon Basics", caret: false, href: "#" },
+  { label: "Basics", caret: false, href: "#" },
   { label: "New Releases", caret: false, href: "#" },
   { label: "Groceries", caret: true, href: "#" },
   { label: "Today's Deals", caret: false, href: "#" },
