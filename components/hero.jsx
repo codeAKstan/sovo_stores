@@ -205,22 +205,22 @@ export default function Hero({ slides = slidesData, intervalMs = 5000 }) {
           {/* Controls */}
           <div className="absolute inset-y-0 left-0 right-0 pointer-events-none">
             <div className="flex items-center justify-between h-full">
-              <button
+              {/* <button
                 type="button"
                 className="pointer-events-auto p-2 rounded-full bg-white/20 hover:bg-white/30 transition text-white"
                 aria-label="Previous slide"
                 onClick={prev}
               >
                 <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
+              </button> */}
+              {/* <button
                 type="button"
                 className="pointer-events-auto p-2 rounded-full bg-white/20 hover:bg-white/30 transition text-white"
                 aria-label="Next slide"
                 onClick={next}
               >
                 <ChevronRight className="h-5 w-5" />
-              </button>
+              </button> */}
             </div>
           </div>
 
