@@ -95,6 +95,13 @@ export function HeroSection() {
               >
                 View All Deals
               </Button>
+               <Button
+                variant="outline"
+                size="lg"
+                className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-full font-semibold transition-all duration-300 bg-transparent"
+              >
+                Track Your Order
+              </Button>
             </div>
           </div>
 

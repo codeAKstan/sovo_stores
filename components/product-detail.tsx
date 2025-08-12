@@ -114,6 +114,204 @@ const products = [
       Colors: "Silver, Space Gray",
     },
   },
+  {
+    id: 7,
+    name: "Samsung 28 cu. ft. French Door Refrigerator",
+    category: "Linea Blanca",
+    price: 899,
+    originalPrice: 1799,
+    images: ["/samsung-refrigerator.png"],
+    rating: 4.6,
+    reviews: 324,
+    colors: ["Stainless Steel", "Black Stainless", "White"],
+    storage: ["28 cu. ft.", "25 cu. ft.", "32 cu. ft."],
+    isNew: false,
+    isSale: true,
+    description: "Spacious French door refrigerator with advanced cooling technology and smart features.",
+    features: [
+      "28 cu. ft. total capacity",
+      "Twin Cooling Plus technology",
+      "FlexZone drawer with 4 temperature settings",
+      "Ice and water dispenser",
+      "ENERGY STAR certified",
+      "Smart connectivity with Wi-Fi",
+    ],
+    specifications: {
+      Capacity: "28 cu. ft.",
+      Type: "French Door",
+      "Ice Maker": "Built-in with dispenser",
+      "Water Filter": "Yes, replaceable",
+      Dimensions: '35.75" W x 70" H x 36.25" D',
+      "Energy Rating": "ENERGY STAR",
+      Warranty: "1 year parts and labor",
+      Features: "Smart connectivity, FlexZone drawer",
+    },
+  },
+  {
+    id: 8,
+    name: "LG 5.2 cu. ft. Front Load Washing Machine",
+    category: "Linea Blanca",
+    price: 549,
+    originalPrice: 1099,
+    images: ["/lg-washing-machine.png"],
+    rating: 4.5,
+    reviews: 567,
+    colors: ["White", "Graphite Steel", "Black Steel"],
+    storage: ["5.2 cu. ft.", "4.5 cu. ft.", "5.8 cu. ft."],
+    isNew: true,
+    isSale: true,
+    description: "High-efficiency front load washer with steam technology and smart features.",
+    features: [
+      "5.2 cu. ft. capacity",
+      "TurboWash 360° technology",
+      "Steam technology for better cleaning",
+      "14 wash cycles",
+      "SmartThinQ app connectivity",
+      "ENERGY STAR Most Efficient",
+    ],
+    specifications: {
+      Capacity: "5.2 cu. ft.",
+      Type: "Front Load",
+      "Wash Cycles": "14 cycles",
+      "Water Temperature": "5 temperature options",
+      Dimensions: '27" W x 39" H x 30.25" D',
+      "Energy Rating": "ENERGY STAR Most Efficient",
+      Warranty: "1 year parts and labor",
+      Features: "Steam, SmartThinQ, TurboWash 360°",
+    },
+  },
+  {
+    id: 9,
+    name: "Whirlpool Built-In Dishwasher",
+    category: "Linea Blanca",
+    price: 399,
+    originalPrice: 799,
+    images: ["/whirlpool-dishwasher.png"],
+    rating: 4.4,
+    reviews: 289,
+    colors: ["Stainless Steel", "White", "Black"],
+    storage: ["Standard Capacity", "Large Capacity"],
+    isNew: false,
+    isSale: true,
+    description: "Quiet and efficient built-in dishwasher with multiple wash cycles and stainless steel interior.",
+    features: [
+      "Stainless steel interior",
+      "Quiet operation at 47 dBA",
+      "6 wash cycles including Heavy and Quick",
+      "Adjustable upper rack",
+      "Heated dry option",
+      "ENERGY STAR certified",
+    ],
+    specifications: {
+      Type: "Built-in Dishwasher",
+      "Noise Level": "47 dBA",
+      "Wash Cycles": "6 cycles",
+      Racks: "2 racks with adjustable upper",
+      Dimensions: '24" W x 34" H x 24" D',
+      "Energy Rating": "ENERGY STAR",
+      Warranty: "1 year limited",
+      Features: "Stainless interior, Heated dry",
+    },
+  },
+  {
+    id: 10,
+    name: "GE 30-inch Electric Range",
+    category: "Linea Blanca",
+    price: 649,
+    originalPrice: 1299,
+    images: ["/ge-electric-range.png"],
+    rating: 4.3,
+    reviews: 412,
+    colors: ["Stainless Steel", "White", "Black"],
+    storage: ["5.3 cu. ft. Oven", "6.2 cu. ft. Oven"],
+    isNew: false,
+    isSale: true,
+    description: "Versatile electric range with convection oven and smooth cooktop surface.",
+    features: [
+      "5.3 cu. ft. oven capacity",
+      "True European convection",
+      "Smooth ceramic glass cooktop",
+      "Self-cleaning oven",
+      "Storage drawer",
+      "Sabbath mode available",
+    ],
+    specifications: {
+      "Oven Capacity": "5.3 cu. ft.",
+      "Cooktop Type": "Smooth ceramic glass",
+      Elements: "4 radiant elements",
+      Convection: "True European convection",
+      Dimensions: '29.875" W x 47" H x 28.25" D',
+      "Self-Cleaning": "Yes",
+      Warranty: "1 year limited",
+      Features: "Storage drawer, Sabbath mode",
+    },
+  },
+  {
+    id: 11,
+    name: "Frigidaire 18 cu. ft. Top Freezer Refrigerator",
+    category: "Linea Blanca",
+    price: 449,
+    originalPrice: 899,
+    images: ["/frigidaire-refrigerator.png"],
+    rating: 4.2,
+    reviews: 198,
+    colors: ["White", "Stainless Steel", "Black"],
+    storage: ["18 cu. ft.", "16 cu. ft.", "20 cu. ft."],
+    isNew: false,
+    isSale: true,
+    description: "Reliable top freezer refrigerator with adjustable shelves and crisper drawers.",
+    features: [
+      "18 cu. ft. total capacity",
+      "Adjustable glass shelves",
+      "2 humidity-controlled crisper drawers",
+      "Gallon door storage",
+      "Reversible door",
+      "ENERGY STAR qualified",
+    ],
+    specifications: {
+      Capacity: "18 cu. ft.",
+      Type: "Top Freezer",
+      Shelves: "Adjustable glass shelves",
+      "Crisper Drawers": "2 humidity-controlled",
+      Dimensions: '30" W x 66.125" H x 32.125" D',
+      "Energy Rating": "ENERGY STAR",
+      Warranty: "1 year parts and labor",
+      Features: "Reversible door, Gallon storage",
+    },
+  },
+  {
+    id: 12,
+    name: "Maytag 7.4 cu. ft. Electric Dryer",
+    category: "Linea Blanca",
+    price: 499,
+    originalPrice: 999,
+    images: ["/maytag-dryer.png"],
+    rating: 4.7,
+    reviews: 445,
+    colors: ["White", "Metallic Slate"],
+    storage: ["7.4 cu. ft.", "6.7 cu. ft.", "8.8 cu. ft."],
+    isNew: true,
+    isSale: true,
+    description: "Powerful electric dryer with advanced moisture sensing and wrinkle prevention.",
+    features: [
+      "7.4 cu. ft. capacity",
+      "Advanced moisture sensing",
+      "Wrinkle Prevent option",
+      "10 drying cycles",
+      "Sanitize cycle",
+      "PowerDry system",
+    ],
+    specifications: {
+      Capacity: "7.4 cu. ft.",
+      Type: "Electric Dryer",
+      "Drying Cycles": "10 cycles",
+      "Moisture Sensing": "Advanced sensing",
+      Dimensions: '27" W x 39" H x 30" D',
+      "Lint Filter": "Easy-access lint filter",
+      Warranty: "1 year limited",
+      Features: "Wrinkle Prevent, Sanitize cycle",
+    },
+  },
 ]
 
 interface ProductDetailProps {
@@ -165,6 +363,8 @@ export function ProductDetail({ productId }: ProductDetailProps) {
     }
     dispatch({ type: "OPEN_CART" })
   }
+
+  const storageLabel = product.category === "Linea Blanca" ? "Capacity" : "Storage"
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -260,9 +460,11 @@ export function ProductDetail({ productId }: ProductDetailProps) {
             </div>
           </div>
 
-          {/* Storage Selection */}
+          {/* Storage/Capacity Selection */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">Storage: {selectedStorage}</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">
+              {storageLabel}: {selectedStorage}
+            </h3>
             <div className="grid grid-cols-2 gap-3">
               {product.storage.map((storage) => (
                 <button

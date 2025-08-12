@@ -92,6 +92,90 @@ const products = [
     isNew: true,
     isSale: true,
   },
+  {
+    id: 7,
+    name: "Samsung French Door Refrigerator",
+    category: "Linea Blanca",
+    price: 899,
+    originalPrice: 1799,
+    image: "/samsung-refrigerator.png",
+    rating: 4.7,
+    reviews: 1456,
+    colors: ["Stainless Steel", "Black Stainless", "White"],
+    storage: ["25.5 cu ft", "28 cu ft", "30 cu ft"],
+    isNew: false,
+    isSale: true,
+  },
+  {
+    id: 8,
+    name: "LG Front Load Washing Machine",
+    category: "Linea Blanca",
+    price: 549,
+    originalPrice: 1099,
+    image: "/lg-washing-machine.png",
+    rating: 4.6,
+    reviews: 2341,
+    colors: ["White", "Graphite Steel", "Black Steel"],
+    storage: ["4.5 cu ft", "5.2 cu ft", "5.8 cu ft"],
+    isNew: true,
+    isSale: true,
+  },
+  {
+    id: 9,
+    name: "Whirlpool Built-in Dishwasher",
+    category: "Linea Blanca",
+    price: 399,
+    originalPrice: 799,
+    image: "/whirlpool-dishwasher.png",
+    rating: 4.5,
+    reviews: 987,
+    colors: ["Stainless Steel", "Black", "White"],
+    storage: ["Standard", "Tall Tub", "Third Rack"],
+    isNew: false,
+    isSale: true,
+  },
+  {
+    id: 10,
+    name: "GE Electric Range",
+    category: "Linea Blanca",
+    price: 649,
+    originalPrice: 1299,
+    image: "/ge-electric-range.png",
+    rating: 4.4,
+    reviews: 1234,
+    colors: ["Stainless Steel", "Black", "White"],
+    storage: ["5.3 cu ft", "6.2 cu ft", "7.1 cu ft"],
+    isNew: true,
+    isSale: true,
+  },
+  {
+    id: 11,
+    name: "Frigidaire Side-by-Side Refrigerator",
+    category: "Linea Blanca",
+    price: 749,
+    originalPrice: 1499,
+    image: "/frigidaire-refrigerator.png",
+    rating: 4.3,
+    reviews: 876,
+    colors: ["Stainless Steel", "Black", "White"],
+    storage: ["22.1 cu ft", "25.5 cu ft", "28.4 cu ft"],
+    isNew: false,
+    isSale: true,
+  },
+  {
+    id: 12,
+    name: "Maytag Top Load Dryer",
+    category: "Linea Blanca",
+    price: 449,
+    originalPrice: 899,
+    image: "/maytag-dryer.png",
+    rating: 4.6,
+    reviews: 1567,
+    colors: ["White", "Metallic Slate"],
+    storage: ["7.0 cu ft", "7.4 cu ft", "8.8 cu ft"],
+    isNew: true,
+    isSale: true,
+  },
 ]
 
 export function ProductGrid() {
@@ -99,7 +183,7 @@ export function ProductGrid() {
   const [favorites, setFavorites] = useState<number[]>([])
   const { dispatch } = useCart()
 
-  const categories = ["All", "iPhone", "MacBook"]
+  const categories = ["All", "iPhone", "MacBook", "Linea Blanca"]
 
   const filteredProducts =
     selectedCategory === "All" ? products : products.filter((product) => product.category === selectedCategory)
@@ -131,13 +215,13 @@ export function ProductGrid() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our premium collection of iPhones and MacBooks with unbeatable prices and quality
+            Discover our premium collection of iPhones, MacBooks, and home appliances with unbeatable prices and quality
           </p>
         </div>
 
         {/* Category Filter */}
         <div className="flex justify-center mb-12">
-          <div className="flex space-x-2 bg-gray-100 rounded-full p-1">
+          <div className="flex flex-wrap justify-center space-x-2 bg-gray-100 rounded-full p-1">
             {categories.map((category) => (
               <button
                 key={category}
@@ -218,28 +302,12 @@ export function ProductGrid() {
                   </div>
                 </div>
 
-                {/* Color Options */}
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">Colors:</p>
-                  <div className="flex space-x-2">
-                    {product.colors.slice(0, 4).map((color, index) => (
-                      <div
-                        key={index}
-                        className="w-6 h-6 rounded-full border-2 border-gray-300 bg-gradient-to-br from-gray-200 to-gray-400"
-                        title={color}
-                      />
-                    ))}
-                    {product.colors.length > 4 && (
-                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 bg-gray-100 flex items-center justify-center">
-                        <span className="text-xs text-gray-600">+{product.colors.length - 4}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
 
                 {/* Storage Options */}
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">Storage:</p>
+                  <p className="text-sm text-gray-600 mb-2">
+                    {product.category === "Linea Blanca" ? "Capacity:" : "Storage:"}
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {product.storage.slice(0, 3).map((storage) => (
                       <span key={storage} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
@@ -269,7 +337,7 @@ export function ProductGrid() {
                   </Button>
                   <Link href={`/product/${product.id}`}>
                     <Button variant="outline" className="px-4 py-3 rounded-xl bg-transparent">
-                      View Details
+                      Buy Now
                     </Button>
                   </Link>
                 </div>
