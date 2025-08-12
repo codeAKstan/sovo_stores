@@ -183,7 +183,7 @@ export function ProductGrid() {
   const [favorites, setFavorites] = useState<number[]>([])
   const { dispatch } = useCart()
 
-  const categories = ["All", "iPhone", "MacBook", "Linea Blanca"]
+  const categories = ["iPhone", "MacBook", "Linea Blanca"]
 
   const filteredProducts =
     selectedCategory === "All" ? products : products.filter((product) => product.category === selectedCategory)
