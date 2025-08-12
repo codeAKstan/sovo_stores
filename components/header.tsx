@@ -5,27 +5,28 @@ import { Search, ShoppingCart, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useCart } from "@/contexts/cart-context"
+import Link from "next/link"
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { state, dispatch } = useCart()
 
   const navigationItems = [
-    "Electronics",
-    "iPhones",
-    "MacBooks",
-    "Accessories",
-    "Best Sellers",
-    "New Releases",
-    "Today's Deals",
-    "Support",
-    "Track Orders",
+    { name: "Electronics", href: "/electronics" },
+    { name: "iPhones", href: "/iphones" },
+    { name: "MacBooks", href: "/macbooks" },
+    { name: "Accessories", href: "/accessories" },
+    { name: "Best Sellers", href: "/best-sellers" },
+    { name: "New Releases", href: "/new-releases" },
+    { name: "Today's Deals", href: "/todays-deals" },
+    { name: "Support", href: "/support" },
+    { name: "Track Orders", href: "/track-orders" },
   ]
 
   const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <header className="w-full bg-white border-b">
+    <header className="fixed top-0 left-0 right-0 w-full bg-white border-b z-50 shadow-sm">
       {/* Main Header */}
       <div className="flex items-center justify-between px-4 py-3 md:px-6">
         {/* Mobile Menu Button */}
@@ -35,9 +36,11 @@ export function Header() {
 
         {/* Logo */}
         <div className="flex-1 md:flex-none text-center md:text-left">
-          <h1 className="text-xl md:text-2xl font-bold">
-            Sovo <span className="text-blue-600">stores</span>
-          </h1>
+          <Link href="/">
+            <h1 className="text-xl md:text-2xl font-bold cursor-pointer">
+              Sovo <span className="text-blue-600">stores</span>
+            </h1>
+          </Link>
         </div>
 
         {/* Desktop Search Bar */}
@@ -80,12 +83,14 @@ export function Header() {
         <div className="px-4 py-2">
           <nav className="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-2 md:space-y-0">
             {navigationItems.map((item, index) => (
-              <button
+              <Link
                 key={index}
+                href={item.href}
                 className="text-left md:text-center hover:text-blue-200 transition-colors py-1 md:py-0"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
-                {item}
-              </button>
+                {item.name}
+              </Link>
             ))}
           </nav>
         </div>
