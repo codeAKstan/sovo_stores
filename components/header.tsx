@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 const defaultNav = [
   { label: "Accessories", caret: false, href: "#" },
   { label: "Best Sellers", caret: false, href: "#" },
-  { label: "Amazon Basics", caret: false, href: "#" },
+  // { label: "Amazon Basics", caret: false, href: "#" },
   { label: "New Releases", caret: false, href: "#" },
   { label: "Track Orders", caret: false, href: "#" },
   { label: "Today's Deals", caret: false, href: "#" },
