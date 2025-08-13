@@ -73,11 +73,11 @@ export function PurchaseNotifications() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 space-y-2">
+    <div className="fixed top-4 left-4 z-50 space-y-2">
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm animate-in slide-in-from-left-5 duration-300"
+          className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm animate-in slide-in-from-top-5 duration-300"
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
