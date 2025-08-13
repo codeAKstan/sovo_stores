@@ -18,7 +18,7 @@ const products = [
       "/iphone-15-pro-max-titanium.png",
       "/iphone-15-pro-max-back.png",
       "/iphone-15-pro-max-side.png",
-      "/iphone-15-pro-max-camera.png",
+      // "/iphone-15-pro-max-camera.png",
     ],
     rating: 4.9,
     reviews: 2847,
