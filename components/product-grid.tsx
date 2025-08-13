@@ -21,6 +21,7 @@ const products = [
     storage: ["256GB", "512GB", "1TB"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 3,
   },
   {
     id: 2,
@@ -35,6 +36,7 @@ const products = [
     storage: ["128GB", "256GB", "512GB", "1TB"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 5,
   },
   {
     id: 3,
@@ -49,6 +51,7 @@ const products = [
     storage: ["128GB", "256GB", "512GB"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 2,
   },
   {
     id: 4,
@@ -63,6 +66,7 @@ const products = [
     storage: ["512GB", "1TB", "2TB", "4TB"],
     isNew: false,
     isSale: true,
+    quantityRemaining: 8,
   },
   {
     id: 5,
@@ -77,6 +81,7 @@ const products = [
     storage: ["512GB", "1TB", "2TB"],
     isNew: false,
     isSale: true,
+    quantityRemaining: 12,
   },
   {
     id: 6,
@@ -91,6 +96,7 @@ const products = [
     storage: ["256GB", "512GB", "1TB", "2TB"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 7,
   },
   {
     id: 7,
@@ -119,6 +125,7 @@ const products = [
     storage: ["4.5 cu ft", "5.2 cu ft", "5.8 cu ft"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 18,
   },
   {
     id: 9,
@@ -133,6 +140,8 @@ const products = [
     storage: ["Standard", "Tall Tub", "Third Rack"],
     isNew: false,
     isSale: true,
+    quantityRemaining: 6,
+
   },
   {
     id: 10,
@@ -147,6 +156,8 @@ const products = [
     storage: ["5.3 cu ft", "6.2 cu ft", "7.1 cu ft"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 8,
+
   },
   {
     id: 11,
@@ -161,6 +172,8 @@ const products = [
     storage: ["22.1 cu ft", "25.5 cu ft", "28.4 cu ft"],
     isNew: false,
     isSale: true,
+    quantityRemaining: 1,
+
   },
   {
     id: 12,
@@ -175,6 +188,8 @@ const products = [
     storage: ["7.0 cu ft", "7.4 cu ft", "8.8 cu ft"],
     isNew: true,
     isSale: true,
+    quantityRemaining: 10,
+
   },
 ]
 
@@ -315,6 +330,28 @@ export function ProductGrid() {
                       </span>
                     ))}
                   </div>
+                </div>
+
+                {/* Quantity Remaining */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-600">Stock:</span>
+                    <Badge 
+                      variant={product.quantityRemaining <= 10 ? "destructive" : "secondary"}
+                      className={`text-xs ${
+                        product.quantityRemaining <= 10 
+                          ? "bg-red-100 text-red-800 border-red-200" 
+                          : "bg-green-100 text-green-800 border-green-200"
+                      }`}
+                    >
+                      {product.quantityRemaining} left
+                    </Badge>
+                  </div>
+                  {product.quantityRemaining <= 10 && (
+                    <span className="text-xs text-red-600 font-medium animate-pulse">
+                      Limited Stock!
+                    </span>
+                  )}
                 </div>
 
                 {/* Price */}
