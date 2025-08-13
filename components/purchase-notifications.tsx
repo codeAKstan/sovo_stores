@@ -35,8 +35,10 @@ const LOCATIONS = [
 ]
 
 export function PurchaseNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notification, setNotification] = useState<Notification | null>(null)
   const [nextId, setNextId] = useState(1)
+  const [notificationCount, setNotificationCount] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
 
   const generateNotification = (): Notification => {
     const randomName = SALVADOR_NAMES[Math.floor(Math.random() * SALVADOR_NAMES.length)]
@@ -55,26 +57,45 @@ export function PurchaseNotifications() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const newNotification = generateNotification()
-      setNotifications(prev => [...prev, newNotification])
-      setNextId(prev => prev + 1)
+      // Check if we should pause after 5 notifications
+      if (notificationCount >= 5 && !isPaused) {
+        setIsPaused(true)
+        setNotificationCount(0)
+        
+        // Resume after 10 minutes (600,000 ms)
+        setTimeout(() => {
+          setIsPaused(false)
+        }, 600000)
+        
+        return
+      }
 
-      // Auto remove notification after 4 seconds
+      // Don't show notifications during pause
+      if (isPaused) {
+        return
+      }
+
+      const newNotification = generateNotification()
+      setNotification(newNotification)
+      setNextId(prev => prev + 1)
+      setNotificationCount(prev => prev + 1)
+
+      // Auto remove notification after 10 seconds
       setTimeout(() => {
-        setNotifications(prev => prev.filter(n => n.id !== newNotification.id))
-      }, 4000)
+        setNotification(null)
+      }, 10000)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [nextId])
+  }, [nextId, notificationCount, isPaused])
 
-  const removeNotification = (id: number) => {
-    setNotifications(prev => prev.filter(n => n.id !== id))
+  const removeNotification = () => {
+    setNotification(null)
   }
 
   return (
     <div className="fixed top-4 right-4 z-50 space-y-2">
-      {notifications.map((notification) => (
+      {notification && (
         <div
           key={notification.id}
           className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-sm animate-in slide-in-from-top-5 duration-300"
@@ -99,14 +120,14 @@ export function PurchaseNotifications() {
               </p>
             </div>
             <button
-              onClick={() => removeNotification(notification.id)}
+              onClick={removeNotification}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         </div>
-      ))}
+      )}
     </div>
   )
 }

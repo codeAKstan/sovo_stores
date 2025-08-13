@@ -111,6 +111,8 @@ const products = [
     storage: ["25.5 cu ft", "28 cu ft", "30 cu ft"],
     isNew: false,
     isSale: true,
+    quantityRemaining: 9,
+
   },
   {
     id: 8,
