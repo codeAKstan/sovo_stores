@@ -16,7 +16,8 @@ export function ShippingGuaranteeSection() {
 
         <div className="relative">
           <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/WhatsApp%20Image%202025-08-13%20at%204.40.31%20PM-KZHNMdtsL2UKph12sIKTxk278DNzAI.jpeg"
+            src="/travel.png"
+
             alt="SovoStores shipping network across Latin America with money back guarantee"
             width={1200}
             height={600}

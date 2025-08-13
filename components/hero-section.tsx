@@ -57,7 +57,7 @@ const heroSlides = [
       "Browse thousands of products, compare prices, and shop with confidence using our mobile-optimized platform.",
     background: "bg-gradient-to-br from-blue-800 via-teal-700 to-cyan-800",
     image:
-      "/ad.jpg",
+      "/ad.jpeg",
   },
   {
     id: 3,
@@ -68,7 +68,7 @@ const heroSlides = [
       "Fast, reliable delivery to Guatemala, Panama, Mexico, Dominican Republic, Colombia and more. 100% satisfaction guaranteed.",
     background: "bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600",
     image:
-    "/travel.jpeg",
+    "/travel.png",
   },
 ]
 

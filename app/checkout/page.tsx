@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { ArrowLeft, CreditCard, Truck, Shield, Check, Building2, Copy } from "lucide-react"
+import { ArrowLeft, CreditCard, Truck, Shield, Check, Building2, Copy, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -16,6 +16,7 @@ export default function CheckoutPage() {
   const { state } = useCart()
   const [step, setStep] = useState(1)
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [isCardProcessing, setIsCardProcessing] = useState(false)
   const [formData, setFormData] = useState({
     // Shipping Information
     firstName: "",
@@ -39,7 +40,7 @@ export default function CheckoutPage() {
     sameAsShipping: true,
 
     // Payment Information
-    paymentMethod: "card", // Add payment method selection
+    paymentMethod: "bank", // Changed default to bank transfer
     cardNumber: "",
     expiryDate: "",
     cvv: "",
@@ -62,6 +63,18 @@ export default function CheckoutPage() {
   }
 
   const handleNextStep = () => {
+    // If moving from payment step and card is selected, simulate processing
+    if (step === 3 && formData.paymentMethod === "card") {
+      setIsCardProcessing(true)
+      // Simulate 10 second loading then redirect to bank transfer
+      setTimeout(() => {
+        setIsCardProcessing(false)
+        handleInputChange("paymentMethod", "bank")
+        alert("Card processing failed. Please use bank transfer instead.")
+      }, 10000)
+      return
+    }
+    
     if (step < 4) setStep(step + 1)
   }
 
@@ -199,35 +212,7 @@ export default function CheckoutPage() {
                       />
                     </div>
 
-                    <div className="grid md:grid-cols-3 gap-4">
-                      <div>
-                        <Label htmlFor="city">City</Label>
-                        <Input
-                          id="city"
-                          value={formData.city}
-                          onChange={(e) => handleInputChange("city", e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="state">State</Label>
-                        <Input
-                          id="state"
-                          value={formData.state}
-                          onChange={(e) => handleInputChange("state", e.target.value)}
-                          required
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="zipCode">ZIP Code</Label>
-                        <Input
-                          id="zipCode"
-                          value={formData.zipCode}
-                          onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                          required
-                        />
-                      </div>
-                    </div>
+                    
 
                     {/* Shipping Method */}
                     <div>
@@ -350,22 +335,6 @@ export default function CheckoutPage() {
                           <input
                             type="radio"
                             name="paymentMethod"
-                            value="card"
-                            checked={formData.paymentMethod === "card"}
-                            onChange={(e) => handleInputChange("paymentMethod", e.target.value)}
-                            className="text-blue-600"
-                          />
-                          <CreditCard className="w-5 h-5 text-gray-600" />
-                          <div>
-                            <span className="font-medium">Pay with Card</span>
-                            <p className="text-sm text-gray-600">Credit or Debit Card</p>
-                          </div>
-                        </label>
-                        
-                        <label className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
-                          <input
-                            type="radio"
-                            name="paymentMethod"
                             value="bank"
                             checked={formData.paymentMethod === "bank"}
                             onChange={(e) => handleInputChange("paymentMethod", e.target.value)}
@@ -374,14 +343,40 @@ export default function CheckoutPage() {
                           <Building2 className="w-5 h-5 text-gray-600" />
                           <div>
                             <span className="font-medium">Bank Transfer</span>
-                            <p className="text-sm text-gray-600">Direct bank account transfer</p>
+                            <p className="text-sm text-gray-600">Direct bank account transfer (Recommended)</p>
+                          </div>
+                        </label>
+                        
+                        <label className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="card"
+                            checked={formData.paymentMethod === "card"}
+                            onChange={(e) => handleInputChange("paymentMethod", e.target.value)}
+                            className="text-blue-600"
+                            disabled={isCardProcessing}
+                          />
+                          <CreditCard className="w-5 h-5 text-gray-600" />
+                          <div>
+                            <span className="font-medium">Pay with Card</span>
+                            <p className="text-sm text-gray-600">Credit or Debit Card</p>
                           </div>
                         </label>
                       </div>
                     </div>
 
+                    {/* Card Processing Loading */}
+                    {isCardProcessing && (
+                      <div className="bg-blue-50 p-6 rounded-lg text-center">
+                        <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
+                        <p className="font-medium text-blue-900">Processing card payment...</p>
+                        <p className="text-sm text-blue-700 mt-1">Please wait while we verify your payment details.</p>
+                      </div>
+                    )}
+
                     {/* Card Payment Form */}
-                    {formData.paymentMethod === "card" && (
+                    {formData.paymentMethod === "card" && !isCardProcessing && (
                       <div className="space-y-4">
                         <div className="flex items-center space-x-2 mb-4">
                           <CreditCard className="w-5 h-5 text-gray-600" />
@@ -603,7 +598,20 @@ export default function CheckoutPage() {
                   </Button>
 
                   {step < 4 ? (
-                    <Button onClick={handleNextStep}>Next</Button>
+                    <Button 
+                      onClick={handleNextStep} 
+                      disabled={isCardProcessing}
+                      className={isCardProcessing ? "opacity-50 cursor-not-allowed" : ""}
+                    >
+                      {isCardProcessing ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                          Processing...
+                        </>
+                      ) : (
+                        "Next"
+                      )}
+                    </Button>
                   ) : (
                     <Button onClick={handlePlaceOrder} className="bg-green-600 hover:bg-green-700">
                       Place Order
