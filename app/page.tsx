@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section"
 import { ProductGrid } from "@/components/product-grid"
 import { CartSidebar } from "@/components/cart-sidebar"
 import { Footer } from "@/components/footer"
+import { PurchaseNotifications } from "@/components/purchase-notifications"
 
 export default function Home() {
   return (
@@ -11,8 +12,8 @@ export default function Home() {
       <HeroSection />
       <ProductGrid />
       <CartSidebar />
-      {/* Added Footer component */}
       <Footer />
+      <PurchaseNotifications />
     </div>
   )
 }
