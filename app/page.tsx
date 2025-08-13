@@ -11,8 +11,8 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <HeroSection />
-      <FeaturesSection />
       <ProductGrid />
+      <FeaturesSection />
       <CartSidebar />
       <Footer />
       <PurchaseNotifications />

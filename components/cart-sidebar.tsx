@@ -3,6 +3,7 @@
 import { X, Plus, Minus, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/contexts/cart-context"
+import Link from "next/link"
 
 export function CartSidebar() {
   const { state, dispatch } = useCart()
@@ -119,9 +120,11 @@ export function CartSidebar() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-                  Checkout
-                </Button>
+                <Link href="/checkout">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
+                    Checkout
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   className="w-full bg-transparent"
