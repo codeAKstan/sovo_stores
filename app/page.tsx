@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/hero-section"
 import { ProductGrid } from "@/components/product-grid"
 import { CartSidebar } from "@/components/cart-sidebar"
 import { FeaturesSection } from "@/components/features-section"
+import { ShippingGuaranteeSection } from "@/components/shipping-guarantee-section"
 import { Footer } from "@/components/footer"
 import { PurchaseNotifications } from "@/components/purchase-notifications"
 
@@ -13,6 +14,7 @@ export default function Home() {
       <HeroSection />
       <ProductGrid />
       <FeaturesSection />
+      <ShippingGuaranteeSection />
       <CartSidebar />
       <Footer />
       <PurchaseNotifications />
