@@ -1,100 +1,102 @@
 "use client"
 
-import { useState } from "react"
-import { Search, ShoppingCart, Menu, X } from "lucide-react"
+import Link from "next/link"
+import { Menu, ShoppingCart, Search, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useCart } from "@/contexts/cart-context"
-import Link from "next/link"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
-export function Header() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { state, dispatch } = useCart()
+const defaultNav = [
+  { label: "Accessories", caret: false, href: "#" },
+  { label: "Best Sellers", caret: false, href: "#" },
+  { label: "Amazon Basics", caret: false, href: "#" },
+  { label: "New Releases", caret: false, href: "#" },
+  { label: "Track Orders", caret: false, href: "#" },
+  { label: "Today's Deals", caret: false, href: "#" },
+  { label: "Registry", caret: false, href: "#" },
+  { label: "Support", caret: false, href: "#" },
+]
 
-  const navigationItems = [
-    { name: "Electronics", href: "/electronics" },
-    { name: "iPhones", href: "/iphones" },
-    { name: "MacBooks", href: "/macbooks" },
-    { name: "Accessories", href: "/accessories" },
-    { name: "Best Sellers", href: "/best-sellers" },
-    { name: "New Releases", href: "/new-releases" },
-    { name: "Today's Deals", href: "/todays-deals" },
-    { name: "Support", href: "/support" },
-    { name: "Track Orders", href: "/track-orders" },
-  ]
-
-  const totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0)
-
+function SovoHeader({ navItems = defaultNav }) {
   return (
-    <header className="fixed top-0 left-0 right-0 w-full bg-white border-b z-50 shadow-sm">
-      {/* Main Header */}
-      <div className="flex items-center justify-between px-4 py-3 md:px-6">
-        {/* Mobile Menu Button */}
-        <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </Button>
+    <header className="sticky top-0 z-50">
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 bg-primary text-primary-foreground px-3 py-1 rounded"
+      >
+        Skip to content
+      </a>
 
-        {/* Logo */}
-        <div className="flex-1 md:flex-none text-center md:text-left">
-          <Link href="/">
-            <h1 className="text-xl md:text-2xl font-bold cursor-pointer">
-              Sovo <span className="text-blue-600">stores</span>
-            </h1>
-          </Link>
-        </div>
+      {/* Top bar: menu, brand, cart */}
+      <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Open menu">
+              <Menu className="h-6 w-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-80">
+            <SheetHeader>
+              <SheetTitle>Browse</SheetTitle>
+            </SheetHeader>
+            <nav className="mt-4 grid gap-1">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
+                >
+                  <span className="text-sm">{item.label}</span>
+                  {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
 
-        {/* Desktop Search Bar */}
-        <div className="hidden md:flex flex-1 max-w-2xl mx-8">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="What are you looking for?"
-              className="w-full pl-10 pr-4 py-2 rounded-full border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-            />
-          </div>
-        </div>
+        <Link href="/" className="inline-flex items-center gap-2" aria-label="Sovo stores home">
+          <span className="text-xl font-extrabold tracking-tight">
+            Sovo <span className="text-blue-700">stores</span>
+          </span>
+        </Link>
 
-        {/* Cart Icon */}
-        <Button variant="ghost" size="sm" className="relative" onClick={() => dispatch({ type: "TOGGLE_CART" })}>
-          <ShoppingCart className="h-5 w-5" />
-          {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-              {totalItems > 99 ? "99+" : totalItems}
-            </span>
-          )}
-        </Button>
+        <Link href="/cart" aria-label="Open cart">
+          <Button variant="ghost" size="icon">
+            <ShoppingCart className="h-6 w-6" />
+          </Button>
+        </Link>
       </div>
 
-      {/* Mobile Search Bar */}
-      <div className="md:hidden px-4 pb-3">
+      {/* Search band */}
+      <div className="bg-blue-800 px-4 py-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
-            type="text"
+            type="search"
             placeholder="What are you looking for?"
-            className="w-full pl-10 pr-4 py-2 rounded-full border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+            aria-label="Search Sovo stores"
+            className="h-11 pl-11 pr-4 rounded-full bg-white text-base placeholder:text-muted-foreground"
           />
         </div>
       </div>
 
-      {/* Navigation Menu */}
-      <div className={`bg-blue-600 text-white ${isMobileMenuOpen ? "block" : "hidden"} md:block`}>
-        <div className="px-4 py-2">
-          <nav className="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-2 md:space-y-0">
-            {navigationItems.map((item, index) => (
-              <Link
-                key={index}
-                href={item.href}
-                className="text-left md:text-center hover:text-blue-200 transition-colors py-1 md:py-0"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </nav>
+      {/* Under-search nav (horizontal scroll), styled like the reference */}
+      <nav aria-label="Primary" className="bg-slate-900 text-white/90 text-sm">
+        <div
+          className="flex items-center gap-6 px-3 py-2 overflow-x-auto whitespace-nowrap
+                     [-ms-overflow-style:none] [scrollbar-width:none]
+                     [&::-webkit-scrollbar]:hidden"
+        >
+          {navItems.map((item) => (
+            <Link key={item.label} href={item.href} className="inline-flex items-center gap-1 hover:text-white">
+              <span>{item.label}</span>
+              {item.caret ? <ChevronDown className="h-4 w-4 opacity-80" /> : null}
+            </Link>
+          ))}
         </div>
-      </div>
+      </nav>
     </header>
   )
 }
+
+export { SovoHeader as Header }
