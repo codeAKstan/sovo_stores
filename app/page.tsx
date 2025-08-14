@@ -5,6 +5,7 @@ import { CartSidebar } from "@/components/cart-sidebar"
 import { FeaturesSection } from "@/components/features-section"
 import { ShippingGuaranteeSection } from "@/components/shipping-guarantee-section"
 import { Footer } from "@/components/footer"
+import { ReviewsSection } from "@/components/reviews-section"
 import { PurchaseNotifications } from "@/components/purchase-notifications"
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
       <HeroSection />
       <ProductGrid />
       <FeaturesSection />
+      <ReviewsSection />
       <ShippingGuaranteeSection />
       <CartSidebar />
       <Footer />
