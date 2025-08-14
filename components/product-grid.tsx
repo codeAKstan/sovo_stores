@@ -257,132 +257,149 @@ export function ProductGrid() {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
-            >
-              {/* Product Image */}
-              <Link href={`/product/${product.id}`}>
-                <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 p-6 h-64 cursor-pointer">
-                  {product.isNew && (
-                    <Badge className="absolute top-4 left-4 bg-green-500 hover:bg-green-600">New</Badge>
-                  )}
-                  {product.isSale && (
-                    <Badge className="absolute top-4 right-4 bg-red-500 hover:bg-red-600">50% OFF</Badge>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault()
-                      toggleFavorite(product.id)
-                    }}
-                    className="absolute top-4 right-16 p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-300 z-10"
-                  >
-                    <Heart
-                      className={`h-4 w-4 ${
-                        favorites.includes(product.id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-400 hover:text-red-500"
-                      }`}
-                    />
-                  </button>
-                  <img
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              </Link>
-
-              {/* Product Info */}
-              <div className="p-6 space-y-4">
-                <div>
+          {filteredProducts.map((product, index) => {
+            // Insert ad image before MacBook products (after iPhone products)
+            const shouldShowAd = selectedCategory === "All" && product.category === "MacBook" && index === filteredProducts.findIndex(p => p.category === "MacBook")
+            
+            return (
+              <>
+                {shouldShowAd && (
+                  <div className="col-span-1 md:col-span-2 lg:col-span-3 mb-8">
+                    <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                      <img
+                        src="/ad.jpeg"
+                        alt="Advertisement"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
+                )}
+                <div
+                  key={product.id}
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 overflow-hidden"
+                >
+                  {/* Product Image */}
                   <Link href={`/product/${product.id}`}>
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors cursor-pointer">
-                      {product.name}
-                    </h3>
-                  </Link>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
+                    <div className="relative bg-gradient-to-br from-gray-50 to-gray-100 p-6 h-64 cursor-pointer">
+                      {product.isNew && (
+                        <Badge className="absolute top-4 left-4 bg-green-500 hover:bg-green-600">New</Badge>
+                      )}
+                      {product.isSale && (
+                        <Badge className="absolute top-4 right-4 bg-red-500 hover:bg-red-600">50% OFF</Badge>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          toggleFavorite(product.id)
+                        }}
+                        className="absolute top-4 right-16 p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-300 z-10"
+                      >
+                        <Heart
                           className={`h-4 w-4 ${
-                            i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                            favorites.includes(product.id)
+                              ? "fill-red-500 text-red-500"
+                              : "text-gray-400 hover:text-red-500"
                           }`}
                         />
-                      ))}
+                      </button>
+                      <img
+                        src={product.image || "/placeholder.svg"}
+                        alt={product.name}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-                    <span className="text-sm text-gray-600">
-                      {product.rating} ({product.reviews} reviews)
-                    </span>
-                  </div>
-                </div>
-
-
-                {/* Storage Options */}
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {product.category === "Linea Blanca" ? "Capacity:" : "Storage:"}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {product.storage.slice(0, 3).map((storage) => (
-                      <span key={storage} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                        {storage}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quantity Remaining */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Stock:</span>
-                    <Badge 
-                      variant={product.quantityRemaining <= 10 ? "destructive" : "secondary"}
-                      className={`text-xs ${
-                        product.quantityRemaining <= 10 
-                          ? "bg-red-100 text-red-800 border-red-200" 
-                          : "bg-green-100 text-green-800 border-green-200"
-                      }`}
-                    >
-                      {product.quantityRemaining} left
-                    </Badge>
-                  </div>
-                  {product.quantityRemaining <= 10 && (
-                    <span className="text-xs text-red-600 font-medium animate-pulse">
-                      Limited Stock!
-                    </span>
-                  )}
-                </div>
-
-                {/* Price */}
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-gray-900">${product.price}</span>
-                    <span className="text-lg text-gray-500 line-through">${product.originalPrice}</span>
-                  </div>
-                  <p className="text-sm text-green-600 font-medium">Save ${product.originalPrice - product.price}</p>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => addToCart(product)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-                  >
-                    <ShoppingCart className="h-4 w-4" />
-                    <span>Add to Cart</span>
-                  </Button>
-                  <Link href={`/product/${product.id}`}>
-                    <Button variant="outline" className="px-4 py-3 rounded-xl bg-transparent">
-                      Buy Now
-                    </Button>
                   </Link>
+
+                  {/* Product Info */}
+                  <div className="p-6 space-y-4">
+                    <div>
+                      <Link href={`/product/${product.id}`}>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors cursor-pointer">
+                          {product.name}
+                        </h3>
+                      </Link>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <div className="flex items-center">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${
+                                i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-600">
+                          {product.rating} ({product.reviews} reviews)
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Storage Options */}
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {product.category === "Linea Blanca" ? "Capacity:" : "Storage:"}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {product.storage.slice(0, 3).map((storage) => (
+                          <span key={storage} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
+                            {storage}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quantity Remaining */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">Stock:</span>
+                        <Badge 
+                          variant={product.quantityRemaining <= 10 ? "destructive" : "secondary"}
+                          className={`text-xs ${
+                            product.quantityRemaining <= 10 
+                              ? "bg-red-100 text-red-800 border-red-200" 
+                              : "bg-green-100 text-green-800 border-green-200"
+                          }`}
+                        >
+                          {product.quantityRemaining} left
+                        </Badge>
+                      </div>
+                      {product.quantityRemaining <= 10 && (
+                        <span className="text-xs text-red-600 font-medium animate-pulse">
+                          Limited Stock!
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Price */}
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-2xl font-bold text-gray-900">${product.price}</span>
+                        <span className="text-lg text-gray-500 line-through">${product.originalPrice}</span>
+                      </div>
+                      <p className="text-sm text-green-600 font-medium">Save ${product.originalPrice - product.price}</p>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={() => addToCart(product)}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                        <span>Add to Cart</span>
+                      </Button>
+                      <Link href={`/product/${product.id}`}>
+                        <Button variant="outline" className="px-4 py-3 rounded-xl bg-transparent">
+                          Buy Now
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </>
+            )
+          })}
         </div>
 
         {/* Load More Button */}
