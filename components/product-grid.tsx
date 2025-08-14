@@ -258,14 +258,16 @@ export function ProductGrid() {
         {/* Product Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProducts.map((product, index) => {
-            // Insert ad image before MacBook products (after iPhone products)
-            const shouldShowAd = selectedCategory === "All" && product.category === "MacBook" && index === filteredProducts.findIndex(p => p.category === "MacBook")
+            // Insert ad image before MacBook products (when viewing All or MacBook category)
+            const shouldShowAd = (selectedCategory === "All" || selectedCategory === "MacBook") && 
+                                product.category === "MacBook" && 
+                                index === filteredProducts.findIndex(p => p.category === "MacBook")
             
             return (
               <>
                 {shouldShowAd && (
                   <div className="col-span-1 md:col-span-2 lg:col-span-3 mb-8">
-                    <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                    <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-2xl overflow-hidden  transition-all duration-300">
                       <img
                         src="/ad.jpeg"
                         alt="Advertisement"
