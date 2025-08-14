@@ -37,8 +37,6 @@ const LOCATIONS = [
 export function PurchaseNotifications() {
   const [notification, setNotification] = useState<Notification | null>(null)
   const [nextId, setNextId] = useState(1)
-  const [notificationCount, setNotificationCount] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
 
   const generateNotification = (): Notification => {
     const randomName = SALVADOR_NAMES[Math.floor(Math.random() * SALVADOR_NAMES.length)]
@@ -56,38 +54,30 @@ export function PurchaseNotifications() {
   }
 
   useEffect(() => {
+    // Show one notification every 15 minutes (900,000 ms)
     const interval = setInterval(() => {
-      // Check if we should pause after 5 notifications
-      if (notificationCount >= 5 && !isPaused) {
-        setIsPaused(true)
-        setNotificationCount(0)
-        
-        // Resume after 10 minutes (600,000 ms)
-        setTimeout(() => {
-          setIsPaused(false)
-        }, 600000)
-        
-        return
-      }
-
-      // Don't show notifications during pause
-      if (isPaused) {
-        return
-      }
-
       const newNotification = generateNotification()
       setNotification(newNotification)
       setNextId(prev => prev + 1)
-      setNotificationCount(prev => prev + 1)
 
       // Auto remove notification after 10 seconds
       setTimeout(() => {
         setNotification(null)
       }, 10000)
-    }, 5000)
+    }, 900000) // 15 minutes = 15 * 60 * 1000 = 900,000 milliseconds
+
+    // Show first notification immediately when component mounts
+    const initialNotification = generateNotification()
+    setNotification(initialNotification)
+    setNextId(prev => prev + 1)
+    
+    // Auto remove initial notification after 10 seconds
+    setTimeout(() => {
+      setNotification(null)
+    }, 10000)
 
     return () => clearInterval(interval)
-  }, [nextId, notificationCount, isPaused])
+  }, [])
 
   const removeNotification = () => {
     setNotification(null)
