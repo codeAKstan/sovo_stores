@@ -54,7 +54,7 @@ export default function CheckoutPage() {
   const originalTotal = state.items.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0)
   const savings = originalTotal - subtotal
   const shipping =
-    formData.shippingMethod === "express" ? 15.99 : formData.shippingMethod === "overnight" ? 29.99 : 5.99
+    formData.shippingMethod === "express" ? 5.99 : 0
   const tax = subtotal * 0.08
   const total = subtotal + shipping + tax
 
@@ -219,9 +219,8 @@ export default function CheckoutPage() {
                       <Label className="text-base font-medium">Shipping Method</Label>
                       <div className="mt-2 space-y-2">
                         {[
-                          { id: "standard", name: "Standard Shipping", time: "5-7 business days", price: 5.99 },
-                          { id: "express", name: "Express Shipping", time: "2-3 business days", price: 15.99 },
-                          { id: "overnight", name: "Overnight Shipping", time: "1 business day", price: 29.99 },
+                          { id: "standard", name: "Free Shipping", time: "2-3 business days", price: 0 },
+                          { id: "express", name: "Express Shipping", time: "1-2 business days", price: 5.99 },
                         ].map((method) => (
                           <label
                             key={method.id}
@@ -238,7 +237,7 @@ export default function CheckoutPage() {
                             <div className="flex-1">
                               <div className="flex justify-between">
                                 <span className="font-medium">{method.name}</span>
-                                <span className="font-medium">${method.price}</span>
+                                <span className="font-medium">{method.price === 0 ? 'Free' : `$${method.price}`}</span>
                               </div>
                               <span className="text-sm text-gray-600">{method.time}</span>
                             </div>
