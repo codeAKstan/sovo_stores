@@ -345,7 +345,7 @@ export default function CheckoutPage() {
                           <Building2 className="w-5 h-5 text-gray-600" />
                           <div>
                             <span className="font-medium">Bank Transfer</span>
-                            <p className="text-sm text-gray-600">Direct bank account transfer (Recommended)</p>
+                            <p className="text-sm text-gray-600">Direct bank account transfer</p>
                           </div>
                         </label>
                         
