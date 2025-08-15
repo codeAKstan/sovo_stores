@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+// Remove this line: const [showCardErrorModal, setShowCardErrorModal] = useState(false);
 import { useCart } from "@/contexts/cart-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,12 +12,14 @@ import { ArrowLeft, CreditCard, Truck, Shield, Check, Building2, Copy, Loader2 }
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { X } from "lucide-react";
 
 export default function CheckoutPage() {
   const { state } = useCart()
   const [step, setStep] = useState(1)
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const [isCardProcessing, setIsCardProcessing] = useState(false)
+  const [showCardErrorModal, setShowCardErrorModal] = useState(false); // Move this line here
   const [formData, setFormData] = useState({
     // Shipping Information
     firstName: "",
@@ -70,7 +73,7 @@ export default function CheckoutPage() {
       setTimeout(() => {
         setIsCardProcessing(false)
         handleInputChange("paymentMethod", "bank")
-        alert("Card processing failed. Please use bank transfer instead.")
+        setShowCardErrorModal(true);
       }, 10000)
       return
     }
@@ -684,6 +687,37 @@ export default function CheckoutPage() {
       </div>
 
       <Footer />
+      {/* Card Error Modal */}
+{showCardErrorModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 relative">
+      <button
+        onClick={() => setShowCardErrorModal(false)}
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+      >
+        <X className="w-6 h-6" />
+      </button>
+      <div className="flex flex-col items-center justify-center text-center space-y-4">
+        <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+          <X className="w-8 h-8 text-white" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-900">Card Error</h3>
+        <p className="text-gray-600">An error occured.</p>
+      </div>
+      <div className="mt-6 pt-4 border-t border-gray-200">
+        <button
+          onClick={() => {
+            setShowCardErrorModal(false);
+            handleInputChange("paymentMethod", "bank");
+          }}
+          className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   )
 }
