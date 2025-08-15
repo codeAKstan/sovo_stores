@@ -22,6 +22,7 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 3,
+    sold: 47, 
   },
   {
     id: 2,
@@ -37,6 +38,7 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 5,
+    sold: 95,
   },
   {
     id: 3,
@@ -52,6 +54,8 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 2,
+    sold: 90,
+
   },
   {
     id: 4,
@@ -67,6 +71,8 @@ const products = [
     isNew: false,
     isSale: true,
     quantityRemaining: 8,
+    sold: 99,
+
   },
   {
     id: 5,
@@ -82,6 +88,8 @@ const products = [
     isNew: false,
     isSale: true,
     quantityRemaining: 12,
+    sold: 35,
+
   },
   {
     id: 6,
@@ -97,6 +105,8 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 7,
+    sold: 12,
+
   },
   {
     id: 7,
@@ -112,6 +122,8 @@ const products = [
     isNew: false,
     isSale: true,
     quantityRemaining: 9,
+    sold: 15,
+
 
   },
   {
@@ -128,6 +140,8 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 18,
+    sold: 45,
+
   },
   {
     id: 9,
@@ -143,6 +157,7 @@ const products = [
     isNew: false,
     isSale: true,
     quantityRemaining: 6,
+    sold: 62,
 
   },
   {
@@ -159,6 +174,7 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 8,
+    sold: 77,
 
   },
   {
@@ -175,6 +191,8 @@ const products = [
     isNew: false,
     isSale: true,
     quantityRemaining: 1,
+    sold: 14,
+
 
   },
   {
@@ -191,6 +209,8 @@ const products = [
     isNew: true,
     isSale: true,
     quantityRemaining: 10,
+    sold: 18,
+
 
   },
 ]
@@ -353,18 +373,29 @@ export function ProductGrid() {
 
                     {/* Quantity Remaining */}
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600">Stock:</span>
-                        <Badge 
-                          variant={product.quantityRemaining <= 10 ? "destructive" : "secondary"}
-                          className={`text-xs ${
-                            product.quantityRemaining <= 10 
-                              ? "bg-red-100 text-red-800 border-red-200" 
-                              : "bg-green-100 text-green-800 border-green-200"
-                          }`}
-                        >
-                          {product.quantityRemaining} left
-                        </Badge>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-600">Stock:</span>
+                          <Badge 
+                            variant={product.quantityRemaining <= 10 ? "destructive" : "secondary"}
+                            className={`text-xs ${
+                              product.quantityRemaining <= 10 
+                                ? "bg-red-100 text-red-800 border-red-200" 
+                                : "bg-green-100 text-green-800 border-green-200"
+                            }`}
+                          >
+                            {product.quantityRemaining} left
+                          </Badge>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-sm text-gray-600">Sold:</span>
+                          <Badge 
+                            variant="outline"
+                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                          >
+                            {product.sold}
+                          </Badge>
+                        </div>
                       </div>
                       {product.quantityRemaining <= 10 && (
                         <span className="text-xs text-red-600 font-medium animate-pulse">
