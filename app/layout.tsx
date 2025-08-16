@@ -3,12 +3,13 @@ import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { CartProvider } from "@/contexts/cart-context"
+import { AdminProvider } from "@/contexts/admin-context"
 import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Sovo Stores - Premium iPhones & MacBooks",
   description: "Your premium destination for iPhones and MacBooks with unbeatable deals",
-  generator: "codeaksstan",
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -28,7 +29,9 @@ html {
         `}</style>
       </head>
       <body>
-        <CartProvider>{children}</CartProvider>
+        <AdminProvider>
+          <CartProvider>{children}</CartProvider>
+        </AdminProvider>
       </body>
     </html>
   )
