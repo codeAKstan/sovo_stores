@@ -9,11 +9,13 @@ interface ProductPageProps {
   }
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { id } = await params
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <ProductDetail productId={Number.parseInt(params.id)} />
+      <ProductDetail productId={id} />
       <CartSidebar />
       <Footer />
     </div>
