@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Package, AlertCircle, CheckCircle } from "lucide-react"
+import { ArrowLeft, Package, AlertCircle, CheckCircle, Upload } from "lucide-react"
 
 export default function AddProductsPage() {
   const { currentAdmin, isAuthenticated } = useAdmin()
@@ -19,26 +19,72 @@ export default function AddProductsPage() {
   const [formData, setFormData] = useState({
     name: "",
     category: "",
-    price: "",
+    discountPercentage: "", // Changed from price to discountPercentage
     originalPrice: "",
     description: "",
     features: "",
     specifications: "",
-    imageUrl: "",
     colors: "",
     storage: "",
     rating: "5",
     reviews: "0",
+    quantityRemaining: "10",
+    sold: "0",
+    isNew: true,
+    isSale: true
   })
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/admin/login")
     }
   }, [isAuthenticated, router])
+
+  // Calculate sale price based on discount percentage
+  const calculateSalePrice = () => {
+    if (!formData.originalPrice || !formData.discountPercentage) return 0
+    const originalPrice = parseFloat(formData.originalPrice)
+    const discount = parseFloat(formData.discountPercentage)
+    return originalPrice * (1 - discount / 100)
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const uploadImage = async (file: File): Promise<string> => {
+    setUploadingImage(true)
+    try {
+      const filename = `products/${Date.now()}-${file.name}`
+      const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
+        method: 'POST',
+        body: file,
+      })
+      
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+      
+      const { url } = await response.json()
+      return url
+    } finally {
+      setUploadingImage(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,17 +93,27 @@ export default function AddProductsPage() {
     setLoading(true)
 
     try {
-      // Get existing products
-      const existingProducts = JSON.parse(localStorage.getItem("adminProducts") || "[]")
+      if (!selectedFile) {
+        setError("Please select an image file")
+        setLoading(false)
+        return
+      }
 
-      // Create new product
-      const newProduct = {
-        id: Date.now().toString(),
+      // Upload image first
+      const imageUrl = await uploadImage(selectedFile)
+
+      // Calculate the sale price
+      const salePrice = calculateSalePrice()
+
+      // Create product data
+      const productData = {
         ...formData,
-        price: Number.parseFloat(formData.price),
-        originalPrice: Number.parseFloat(formData.originalPrice),
-        rating: Number.parseFloat(formData.rating),
-        reviews: Number.parseInt(formData.reviews),
+        price: salePrice, // Use calculated sale price
+        originalPrice: parseFloat(formData.originalPrice),
+        rating: parseFloat(formData.rating),
+        reviews: parseInt(formData.reviews),
+        quantityRemaining: parseInt(formData.quantityRemaining),
+        sold: parseInt(formData.sold),
         features: formData.features.split("\n").filter((f) => f.trim()),
         specifications: formData.specifications.split("\n").filter((s) => s.trim()),
         colors: formData.colors
@@ -68,30 +124,48 @@ export default function AddProductsPage() {
           .split(",")
           .map((s) => s.trim())
           .filter((s) => s),
-        createdAt: new Date().toISOString(),
+        imageUrl
       }
 
-      // Save to localStorage
-      existingProducts.push(newProduct)
-      localStorage.setItem("adminProducts", JSON.stringify(existingProducts))
+      // Remove discountPercentage from the data sent to API
+      delete productData.discountPercentage
+
+      // Save product to database
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to create product')
+      }
 
       setSuccess("Product added successfully!")
       setFormData({
         name: "",
         category: "",
-        price: "",
+        discountPercentage: "",
         originalPrice: "",
         description: "",
         features: "",
         specifications: "",
-        imageUrl: "",
         colors: "",
         storage: "",
         rating: "5",
         reviews: "0",
+        quantityRemaining: "10",
+        sold: "0",
+        isNew: true,
+        isSale: true
       })
-    } catch (err) {
-      setError("An error occurred while adding the product")
+      setSelectedFile(null)
+      setImagePreview(null)
+    } catch (err: any) {
+      setError(err.message || "An error occurred while adding the product")
     } finally {
       setLoading(false)
     }
@@ -142,6 +216,37 @@ export default function AddProductsPage() {
                 </Alert>
               )}
 
+              {/* Image Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="image">Product Image</Label>
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1">
+                    <Input
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      required
+                    />
+                  </div>
+                  {uploadingImage && (
+                    <div className="flex items-center space-x-2">
+                      <Upload className="h-4 w-4 animate-spin" />
+                      <span className="text-sm text-gray-600">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                {imagePreview && (
+                  <div className="mt-2">
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-32 h-32 object-cover rounded-lg border"
+                    />
+                  </div>
+                )}
+              </div>
+
               {/* Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -165,25 +270,12 @@ export default function AddProductsPage() {
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="iPhones">iPhones</SelectItem>
-                      <SelectItem value="MacBooks">MacBooks</SelectItem>
+                      <SelectItem value="iPhone">iPhone</SelectItem>
+                      <SelectItem value="MacBook">MacBook</SelectItem>
                       <SelectItem value="Linea Blanca">Linea Blanca</SelectItem>
                       <SelectItem value="Accessories">Accessories</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="price">Sale Price ($)</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    required
-                    placeholder="599.99"
-                  />
                 </div>
 
                 <div className="space-y-2">
@@ -198,7 +290,44 @@ export default function AddProductsPage() {
                     placeholder="1199.99"
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="discountPercentage">Discount Percentage</Label>
+                  <Select
+                    value={formData.discountPercentage}
+                    onValueChange={(value) => setFormData({ ...formData, discountPercentage: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select discount" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10% OFF</SelectItem>
+                      <SelectItem value="20">20% OFF</SelectItem>
+                      <SelectItem value="50">50% OFF</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
+
+              {/* Sale Price Display */}
+              {formData.originalPrice && formData.discountPercentage && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-blue-600 font-medium">Calculated Sale Price</p>
+                      <p className="text-2xl font-bold text-blue-800">
+                        ${calculateSalePrice().toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600">Original: ${formData.originalPrice}</p>
+                      <p className="text-sm text-green-600 font-medium">
+                        You save: ${(parseFloat(formData.originalPrice) - calculateSalePrice()).toFixed(2)} ({formData.discountPercentage}% OFF)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Description */}
               <div className="space-y-2">
@@ -260,18 +389,8 @@ export default function AddProductsPage() {
                 </div>
               </div>
 
-              {/* Image and Rating */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="imageUrl">Image URL</Label>
-                  <Input
-                    id="imageUrl"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-
+              {/* Additional Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="rating">Rating (1-5)</Label>
                   <Input
@@ -297,13 +416,37 @@ export default function AddProductsPage() {
                     required
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="quantityRemaining">Quantity</Label>
+                  <Input
+                    id="quantityRemaining"
+                    type="number"
+                    min="0"
+                    value={formData.quantityRemaining}
+                    onChange={(e) => setFormData({ ...formData, quantityRemaining: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="sold">Sold Count</Label>
+                  <Input
+                    id="sold"
+                    type="number"
+                    min="0"
+                    value={formData.sold}
+                    onChange={(e) => setFormData({ ...formData, sold: e.target.value })}
+                    required
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end space-x-2">
                 <Button type="button" variant="outline" onClick={() => router.push("/admin/dashboard")}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading || uploadingImage || !formData.discountPercentage}>
                   {loading ? "Adding Product..." : "Add Product"}
                 </Button>
               </div>
