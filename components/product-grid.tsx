@@ -243,11 +243,18 @@ export function ProductGrid() {
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-600">Stock:</span>
-                        <span className={`text-sm font-medium ${
-                          product.quantityRemaining > 5 ? "text-green-600" : "text-red-600"
-                        }`}>
-                          {product.quantityRemaining}
-                        </span>
+                        <div className="flex items-center space-x-1">
+                          <span className={`text-sm font-medium ${
+                            product.quantityRemaining < 10 ? "text-red-600" : "text-green-600"
+                          }`}>
+                            {product.quantityRemaining}
+                          </span>
+                          {product.quantityRemaining < 10 && (
+                            <span className="text-xs text-red-600 font-medium">
+                              Limited Stock
+                            </span>
+                          )}
+                        </div>
                       </div>
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-600">Sold:</span>
