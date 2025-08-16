@@ -8,7 +8,7 @@ export interface IProduct extends Document {
   description: string
   features: string[]
   specifications: string[]
-  imageUrl: string // This will store the Vercel blob URL
+  images: string[]
   colors: string[]
   storage: string[]
   rating: number
@@ -58,10 +58,15 @@ const ProductSchema = new Schema<IProduct>({
     type: [String],
     default: []
   },
-  imageUrl: {
-    type: String,
-    required: [true, 'Image is required'],
-    trim: true
+  images: {
+    type: [String],
+    required: [true, 'At least one image is required'],
+    validate: {
+      validator: function(v: string[]) {
+        return v && v.length > 0;
+      },
+      message: 'At least one image is required'
+    }
   },
   colors: {
     type: [String],
@@ -101,7 +106,8 @@ const ProductSchema = new Schema<IProduct>({
     default: 0
   }
 }, {
-  timestamps: true
+  timestamps: true,
+  suppressReservedKeysWarning: true // Add this to suppress the isNew warning
 })
 
 // Add indexes for better query performance

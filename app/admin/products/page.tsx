@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, Package, AlertCircle, CheckCircle, Upload } from "lucide-react"
+import { ArrowLeft, Package, AlertCircle, CheckCircle, Upload, X } from "lucide-react"
 
 export default function AddProductsPage() {
   const { currentAdmin, isAuthenticated } = useAdmin()
@@ -19,7 +19,7 @@ export default function AddProductsPage() {
   const [formData, setFormData] = useState({
     name: "",
     category: "",
-    discountPercentage: "", // Changed from price to discountPercentage
+    discountPercentage: "",
     originalPrice: "",
     description: "",
     features: "",
@@ -33,12 +33,12 @@ export default function AddProductsPage() {
     isNew: true,
     isSale: true
   })
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
-  const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingImages, setUploadingImages] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -55,34 +55,46 @@ export default function AddProductsPage() {
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setSelectedFile(file)
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+    const files = Array.from(e.target.files || [])
+    if (files.length > 0) {
+      setSelectedFiles(prev => [...prev, ...files])
+      
+      files.forEach(file => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          setImagePreviews(prev => [...prev, e.target?.result as string])
+        }
+        reader.readAsDataURL(file)
+      })
     }
   }
 
-  const uploadImage = async (file: File): Promise<string> => {
-    setUploadingImage(true)
+  const removeImage = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index))
+    setImagePreviews(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    setUploadingImages(true)
     try {
-      const filename = `products/${Date.now()}-${file.name}`
-      const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
-        method: 'POST',
-        body: file,
+      const uploadPromises = files.map(async (file) => {
+        const filename = `products/${Date.now()}-${Math.random()}-${file.name}`
+        const response = await fetch(`/api/upload?filename=${encodeURIComponent(filename)}`, {
+          method: 'POST',
+          body: file,
+        })
+        
+        if (!response.ok) {
+          throw new Error('Upload failed')
+        }
+        
+        const { url } = await response.json()
+        return url
       })
       
-      if (!response.ok) {
-        throw new Error('Upload failed')
-      }
-      
-      const { url } = await response.json()
-      return url
+      return await Promise.all(uploadPromises)
     } finally {
-      setUploadingImage(false)
+      setUploadingImages(false)
     }
   }
 
@@ -93,23 +105,25 @@ export default function AddProductsPage() {
     setLoading(true)
 
     try {
-      if (!selectedFile) {
-        setError("Please select an image file")
+      if (selectedFiles.length === 0) {
+        setError("Please select at least one image file")
         setLoading(false)
         return
       }
 
-      // Upload image first
-      const imageUrl = await uploadImage(selectedFile)
+      // Upload images first
+      const imageUrls = await uploadImages(selectedFiles)
 
       // Calculate the sale price
       const salePrice = calculateSalePrice()
 
-      // Create product data
+      // Create product data - IMPORTANT: Use 'images' not 'imageUrl'
       const productData = {
-        ...formData,
-        price: salePrice, // Use calculated sale price
+        name: formData.name,
+        category: formData.category,
+        price: salePrice,
         originalPrice: parseFloat(formData.originalPrice),
+        description: formData.description,
         rating: parseFloat(formData.rating),
         reviews: parseInt(formData.reviews),
         quantityRemaining: parseInt(formData.quantityRemaining),
@@ -124,11 +138,12 @@ export default function AddProductsPage() {
           .split(",")
           .map((s) => s.trim())
           .filter((s) => s),
-        imageUrl
+        images: imageUrls, // Use 'images' array, not 'imageUrl'
+        isNew: formData.isNew,
+        isSale: formData.isSale
       }
 
-      // Remove discountPercentage from the data sent to API
-      delete productData.discountPercentage
+      console.log('Sending product data:', productData) // Debug log
 
       // Save product to database
       const response = await fetch('/api/products', {
@@ -162,8 +177,8 @@ export default function AddProductsPage() {
         isNew: true,
         isSale: true
       })
-      setSelectedFile(null)
-      setImagePreview(null)
+      setSelectedFiles([])
+      setImagePreviews([])
     } catch (err: any) {
       setError(err.message || "An error occurred while adding the product")
     } finally {
@@ -216,33 +231,49 @@ export default function AddProductsPage() {
                 </Alert>
               )}
 
-              {/* Image Upload */}
+              {/* Multiple Image Upload */}
               <div className="space-y-2">
-                <Label htmlFor="image">Product Image</Label>
+                <Label htmlFor="images">Product Images</Label>
                 <div className="flex items-center space-x-4">
                   <div className="flex-1">
                     <Input
-                      id="image"
+                      id="images"
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleFileChange}
-                      required
                     />
                   </div>
-                  {uploadingImage && (
+                  {uploadingImages && (
                     <div className="flex items-center space-x-2">
                       <Upload className="h-4 w-4 animate-spin" />
                       <span className="text-sm text-gray-600">Uploading...</span>
                     </div>
                   )}
                 </div>
-                {imagePreview && (
-                  <div className="mt-2">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border"
-                    />
+                
+                {/* Image Previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600 mb-2">Selected Images ({imagePreviews.length}):</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {imagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={preview}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-24 object-cover rounded-lg border"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -446,7 +477,7 @@ export default function AddProductsPage() {
                 <Button type="button" variant="outline" onClick={() => router.push("/admin/dashboard")}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading || uploadingImage || !formData.discountPercentage}>
+                <Button type="submit" disabled={loading || uploadingImages || !formData.discountPercentage || selectedFiles.length === 0}>
                   {loading ? "Adding Product..." : "Add Product"}
                 </Button>
               </div>

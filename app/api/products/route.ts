@@ -45,9 +45,9 @@ export async function POST(request: NextRequest) {
     const productData = await request.json()
     
     // Validation
-    if (!productData.name || !productData.category || !productData.price || !productData.originalPrice || !productData.imageUrl) {
+    if (!productData.name || !productData.category || !productData.price || !productData.originalPrice || !productData.images || productData.images.length === 0) {
       return NextResponse.json(
-        { error: 'Name, category, price, original price, and image are required' },
+        { error: 'Name, category, price, original price, and at least one image are required' },
         { status: 400 }
       )
     }

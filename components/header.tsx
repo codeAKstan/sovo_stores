@@ -7,13 +7,13 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 const defaultNav = [
-  { label: "Accessories", caret: false, href: "#" },
-  { label: "Best Sellers", caret: false, href: "#" },
+  { label: "Cellphones", caret: false, href: "#" },
+  { label: "Laptops", caret: false, href: "#" },
   // { label: "Amazon Basics", caret: false, href: "#" },
-  { label: "New Releases", caret: false, href: "#" },
+  { label: "Linea Blanca", caret: false, href: "#" },
+  { label: "Gaming", caret: false, href: "#" },
   { label: "Track Orders", caret: false, href: "#" },
   { label: "Today's Deals", caret: false, href: "#" },
-  { label: "Registry", caret: false, href: "#" },
   { label: "Support", caret: false, href: "#" },
 ]
 

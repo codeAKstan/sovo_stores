@@ -14,7 +14,7 @@ interface Product {
   category: string
   price: number
   originalPrice: number
-  imageUrl: string
+  images: string[] // Changed from imageUrl to images
   rating: number
   reviews: number
   colors: string[]
@@ -143,7 +143,7 @@ export function ProductGrid() {
                 {/* Product Image */}
                 <div className="relative h-64 bg-gray-50 overflow-hidden">
                   <Image
-                    src={product.imageUrl}
+                    src={product.images[0]}
                     alt={product.name}
                     fill
                     className="object-contain group-hover:scale-105 transition-transform duration-300"
@@ -263,15 +263,29 @@ export function ProductGrid() {
                     </div>
                   </div>
 
-                  {/* Add to Cart Button */}
-                  <Button
-                    onClick={() => addToCart(product)}
-                    className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
-                    disabled={product.quantityRemaining === 0}
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Add to Cart"}</span>
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    {/* Add to Cart Button */}
+                    <Button
+                      onClick={() => addToCart(product)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
+                      disabled={product.quantityRemaining === 0}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Add to Cart"}</span>
+                    </Button>
+                    
+                    {/* Buy Now Button */}
+                    <Link href={`/product/${product._id}`}>
+                      <Button
+                        variant="outline"
+                        className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
+                        disabled={product.quantityRemaining === 0}
+                      >
+                        <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Buy Now"}</span>
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
