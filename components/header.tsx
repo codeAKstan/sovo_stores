@@ -7,14 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 const defaultNav = [
-  { label: "Cellphones", caret: false, href: "#" },
-  { label: "Laptops", caret: false, href: "#" },
-  // { label: "Amazon Basics", caret: false, href: "#" },
-  { label: "Linea Blanca", caret: false, href: "#" },
-  { label: "Gaming", caret: false, href: "#" },
-  { label: "Track Orders", caret: false, href: "#" },
-  { label: "Today's Deals", caret: false, href: "#" },
-  { label: "Support", caret: false, href: "#" },
+  { label: "📱 Cellphones", caret: true, href: "/cellphones", description: "Latest smartphones & accessories" },
+  { label: "💻 Laptops", caret: true, href: "/laptops", description: "Premium computing devices" },
+  { label: "🏠 Linea Blanca", caret: true, href: "/linea-blanca", description: "Refrigeradoras, lavadoras y más" },
+  { label: "🎮 Gaming", caret: true, href: "/gaming", description: "Consoles, PCs & accessories" },
 ]
 
 function SovoHeader({ navItems = defaultNav }) {
@@ -88,9 +84,20 @@ function SovoHeader({ navItems = defaultNav }) {
                      [&::-webkit-scrollbar]:hidden"
         >
           {navItems.map((item) => (
-            <Link key={item.label} href={item.href} className="inline-flex items-center gap-1 hover:text-white">
-              <span>{item.label}</span>
-              {item.caret ? <ChevronDown className="h-4 w-4 opacity-80" /> : null}
+            <Link 
+              key={item.label} 
+              href={item.href} 
+              className="inline-flex items-center gap-1 hover:text-white hover:bg-slate-800 
+                         px-3 py-2 rounded-md transition-all duration-200 hover:scale-105
+                         group relative"
+              title={item.description}
+            >
+              <span className="font-medium">{item.label}</span>
+              {item.caret ? (
+                <ChevronDown className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
+              ) : null}
+              {/* Subtle glow effect on hover */}
+              <div className="absolute inset-0 bg-blue-500/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
             </Link>
           ))}
         </div>
