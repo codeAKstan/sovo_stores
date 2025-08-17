@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Star, Heart, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,7 @@ interface Product {
   category: string
   price: number
   originalPrice: number
-  images: string[] // Changed from imageUrl to images
+  images: string[]
   rating: number
   reviews: number
   colors: string[]
@@ -23,6 +23,7 @@ interface Product {
   isSale: boolean
   quantityRemaining: number
   sold: number
+  createdAt?: string // Add this field
 }
 
 export function ProductGrid() {
@@ -48,7 +49,27 @@ export function ProductGrid() {
       const response = await fetch(url)
       if (response.ok) {
         const data = await response.json()
-        setProducts(data.products)
+        
+        // Sort products by category priority: iPhone first, then MacBook, then Linea Blanca
+        const sortedProducts = data.products.sort((a: Product, b: Product) => {
+          const categoryPriority = {
+            'iPhone': 1,
+            'MacBook': 2,
+            'Linea Blanca': 3
+          }
+          
+          const aPriority = categoryPriority[a.category as keyof typeof categoryPriority] || 999
+          const bPriority = categoryPriority[b.category as keyof typeof categoryPriority] || 999
+          
+          // If same category, sort by creation date (newest first)
+          if (aPriority === bPriority) {
+            return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+          }
+          
+          return aPriority - bPriority
+        })
+        
+        setProducts(sortedProducts)
       } else {
         console.error('Failed to fetch products')
       }
@@ -138,157 +159,181 @@ export function ProductGrid() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
-              <div key={product._id} className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-                {/* Product Image */}
-                <div className="relative h-64 bg-gray-50 overflow-hidden">
-                  <Image
-                    src={product.images[0]}
-                    alt={product.name}
-                    fill
-                    className="object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
-                  
-                  {/* Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col space-y-2">
-                    {product.isNew && (
-                      <Badge className="bg-green-500 hover:bg-green-600 text-white">
-                        New
-                      </Badge>
-                    )}
-                    {product.isSale && (
-                      <Badge className="bg-red-500 hover:bg-red-600 text-white">
-                        Sale
-                      </Badge>
-                    )}
-                  </div>
-
-                  {/* Favorite Button */}
-                  <button
-                    onClick={() => toggleFavorite(product._id)}
-                    className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
-                  >
-                    <Heart
-                      className={`h-5 w-5 transition-colors duration-200 ${
-                        favorites.includes(product._id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-400 hover:text-red-500"
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {/* Product Info */}
-                <div className="p-6">
-                  <div className="mb-4">
-                    <Link href={`/product/${product._id}`}>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 cursor-pointer">
-                        {product.name}
-                      </h3>
-                    </Link>
-                    
-                    {/* Price */}
-                    <div className="flex items-center space-x-2 mb-3">
-                      <span className="text-2xl font-bold text-blue-600">
-                        ${product.price.toLocaleString()}
-                      </span>
-                      {product.originalPrice > product.price && (
-                        <span className="text-lg text-gray-500 line-through">
-                          ${product.originalPrice.toLocaleString()}
-                        </span>
-                      )}
-                      {product.originalPrice > product.price && (
-                        <Badge variant="destructive" className="text-xs">
-                          {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Rating */}
-                    <div className="flex items-center space-x-2 mb-3">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${
-                              i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-gray-600">
-                        {product.rating} ({product.reviews} reviews)
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Storage Options */}
-                  {product.storage.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-600 mb-2">
-                        {product.category === "Linea Blanca" ? "Capacity:" : "Storage:"}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {product.storage.slice(0, 3).map((storage) => (
-                          <span key={storage} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
-                            {storage}
-                          </span>
-                        ))}
+            {products.map((product, index) => {
+              // Check if we should show the ad before this product
+              const shouldShowAd = (selectedCategory === "All" || selectedCategory === "MacBook") && 
+                                   product.category === "MacBook" && 
+                                   index === products.findIndex(p => p.category === "MacBook")
+              
+              return (
+                <React.Fragment key={`product-${product._id}`}>
+                  {/* Advertisement before first MacBook */}
+                  {shouldShowAd && (
+                    <div key={`ad-${product._id}`} className="md:col-span-2 lg:col-span-3 mb-8">
+                      <div className="relative w-full h-48 md:h-64 lg:h-80 rounded-2xl overflow-hidden shadow-lg">
+                        <Image
+                          src="/ad.jpeg"
+                          alt="Advertisement"
+                          fill
+                          className="object-contain"
+                        />
                       </div>
                     </div>
                   )}
+                  
+                  {/* Product Card */}
+                  <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                    {/* Product Image */}
+                    <div className="relative h-64 bg-gray-50 overflow-hidden">
+                      <Image
+                        src={product.images[0]}
+                        alt={product.name}
+                        fill
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
+                      
+                      {/* Badges */}
+                      <div className="absolute top-4 left-4 flex flex-col space-y-2">
+                        {product.isNew && (
+                          <Badge className="bg-green-500 hover:bg-green-600 text-white">
+                            New
+                          </Badge>
+                        )}
+                        {product.isSale && (
+                          <Badge className="bg-red-500 hover:bg-red-600 text-white">
+                            Sale
+                          </Badge>
+                        )}
+                      </div>
 
-                  {/* Quantity and Actions */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600">Stock:</span>
-                        <div className="flex items-center space-x-1">
-                          <span className={`text-sm font-medium ${
-                            product.quantityRemaining < 10 ? "text-red-600" : "text-green-600"
-                          }`}>
-                            {product.quantityRemaining}
+                      {/* Favorite Button */}
+                      <button
+                        onClick={() => toggleFavorite(product._id)}
+                        className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+                      >
+                        <Heart
+                          className={`h-5 w-5 transition-colors duration-200 ${
+                            favorites.includes(product._id)
+                              ? "fill-red-500 text-red-500"
+                              : "text-gray-400 hover:text-red-500"
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="p-6">
+                      <div className="mb-4">
+                        <Link href={`/product/${product._id}`}>
+                          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 cursor-pointer">
+                            {product.name}
+                          </h3>
+                        </Link>
+                        
+                        {/* Price */}
+                        <div className="flex items-center space-x-2 mb-3">
+                          <span className="text-2xl font-bold text-blue-600">
+                            ${product.price.toLocaleString()}
                           </span>
-                          {product.quantityRemaining < 10 && (
-                            <span className="text-xs text-red-600 font-medium">
-                              Limited Stock
+                          {product.originalPrice > product.price && (
+                            <span className="text-lg text-gray-500 line-through">
+                              ${product.originalPrice.toLocaleString()}
                             </span>
                           )}
+                          {product.originalPrice > product.price && (
+                            <Badge variant="destructive" className="text-xs">
+                              {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Rating */}
+                        <div className="flex items-center space-x-2 mb-3">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${
+                                  i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-600">
+                            {product.rating} ({product.reviews} reviews)
+                          </span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-600">Sold:</span>
-                        <span className="text-sm font-medium text-gray-900">{product.sold}</span>
+
+                      {/* Storage Options */}
+                      {product.storage.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm text-gray-600 mb-2">
+                            {product.category === "Linea Blanca" ? "Capacity:" : "Storage:"}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {product.storage.slice(0, 3).map((storage) => (
+                              <span key={storage} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
+                                {storage}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Quantity and Actions */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">Stock:</span>
+                            <div className="flex items-center space-x-1">
+                              <span className={`text-sm font-medium ${
+                                product.quantityRemaining < 10 ? "text-red-600" : "text-green-600"
+                              }`}>
+                                {product.quantityRemaining}
+                              </span>
+                              {product.quantityRemaining < 10 && (
+                                <span className="text-xs text-red-600 font-medium">
+                                  Limited Stock
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-gray-600">Sold:</span>
+                            <span className="text-sm font-medium text-gray-900">{product.sold}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="space-y-2">
+                        {/* Add to Cart Button */}
+                        <Button
+                          onClick={() => addToCart(product)}
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
+                          disabled={product.quantityRemaining === 0}
+                        >
+                          <ShoppingCart className="h-5 w-5" />
+                          <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Add to Cart"}</span>
+                        </Button>
+                        
+                        {/* Buy Now Button */}
+                        <Link href={`/product/${product._id}`}>
+                          <Button
+                            variant="outline"
+                            className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
+                            disabled={product.quantityRemaining === 0}
+                          >
+                            <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Buy Now"}</span>
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="space-y-2">
-                    {/* Add to Cart Button */}
-                    <Button
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
-                      disabled={product.quantityRemaining === 0}
-                    >
-                      <ShoppingCart className="h-5 w-5" />
-                      <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Add to Cart"}</span>
-                    </Button>
-                    
-                    {/* Buy Now Button */}
-                    <Link href={`/product/${product._id}`}>
-                      <Button
-                        variant="outline"
-                        className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
-                        disabled={product.quantityRemaining === 0}
-                      >
-                        <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Buy Now"}</span>
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
+                </React.Fragment>
+              )
+            })}
           </div>
         )}
       </div>
