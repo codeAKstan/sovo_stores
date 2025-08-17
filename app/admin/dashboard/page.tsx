@@ -1,5 +1,5 @@
 "use client"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAdmin } from "@/contexts/admin-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,15 +7,60 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { LayoutDashboard, Users, Package, Star, CreditCard, LogOut, ShoppingCart, DollarSign, Eye } from "lucide-react"
 
+interface DashboardMetrics {
+  totalProducts: number
+  totalOrders: number
+  totalRevenue: number
+  totalReviews: number
+  pendingOrders: number
+  lowStock: number
+  recentProducts: Array<{
+    id: string
+    name: string
+    status: string
+    price: number
+    sold: number
+  }>
+  averageRating: number
+  outOfStock: number
+}
+
 export default function AdminDashboard() {
   const { currentAdmin, isAuthenticated, logout } = useAdmin()
   const router = useRouter()
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/admin/login")
     }
   }, [isAuthenticated, router])
+
+  useEffect(() => {
+    const fetchDashboardMetrics = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/admin/dashboard')
+        if (response.ok) {
+          const data = await response.json()
+          setMetrics(data.metrics)
+        } else {
+          setError('Failed to fetch dashboard metrics')
+        }
+      } catch (err) {
+        setError('Error fetching dashboard data')
+        console.error('Dashboard fetch error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (isAuthenticated) {
+      fetchDashboardMetrics()
+    }
+  }, [isAuthenticated])
 
   if (!isAuthenticated || !currentAdmin) {
     return null
@@ -26,14 +71,26 @@ export default function AdminDashboard() {
     router.push("/admin/login")
   }
 
-  // Mock data for dashboard metrics
-  const metrics = {
-    totalProducts: 15,
-    totalOrders: 247,
-    totalRevenue: 125430,
-    totalReviews: 89,
-    pendingOrders: 12,
-    lowStock: 3,
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !metrics) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error || 'Failed to load dashboard data'}</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -73,7 +130,12 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.totalProducts}</div>
-                <p className="text-xs text-muted-foreground">Active products in store</p>
+                <p className="text-xs text-muted-foreground">
+                  {metrics.outOfStock > 0 && (
+                    <span className="text-red-600">{metrics.outOfStock} out of stock</span>
+                  )}
+                  {metrics.outOfStock === 0 && "All products in stock"}
+                </p>
               </CardContent>
             </Card>
 
@@ -85,7 +147,7 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.totalOrders}</div>
                 <p className="text-xs text-muted-foreground">
-                  <span className="text-green-600">+12</span> from last month
+                  {metrics.pendingOrders} products with sales
                 </p>
               </CardContent>
             </Card>
@@ -98,7 +160,7 @@ export default function AdminDashboard() {
               <CardContent>
                 <div className="text-2xl font-bold">${metrics.totalRevenue.toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground">
-                  <span className="text-green-600">+8.2%</span> from last month
+                  From {metrics.totalOrders} total sales
                 </p>
               </CardContent>
             </Card>
@@ -110,7 +172,9 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.totalReviews}</div>
-                <p className="text-xs text-muted-foreground">Average rating: 4.8/5</p>
+                <p className="text-xs text-muted-foreground">
+                  Average rating: {metrics.averageRating.toFixed(1)}/5
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -162,32 +226,26 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Orders</CardTitle>
-              <CardDescription>Latest customer orders</CardDescription>
+              <CardTitle>Recent Products</CardTitle>
+              <CardDescription>Latest products in your store</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">iPhone 15 Pro Max</p>
-                    <p className="text-sm text-gray-500">Order #1234</p>
-                  </div>
-                  <Badge variant="outline">Pending</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">MacBook Pro 16"</p>
-                    <p className="text-sm text-gray-500">Order #1235</p>
-                  </div>
-                  <Badge variant="default">Completed</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Samsung Refrigerator</p>
-                    <p className="text-sm text-gray-500">Order #1236</p>
-                  </div>
-                  <Badge variant="secondary">Processing</Badge>
-                </div>
+                {metrics.recentProducts.length > 0 ? (
+                  metrics.recentProducts.map((product, index) => (
+                    <div key={product.id} className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        <p className="text-sm text-gray-500">${product.price} • {product.sold} sold</p>
+                      </div>
+                      <Badge variant={product.status === 'In Stock' ? 'default' : 'secondary'}>
+                        {product.status}
+                      </Badge>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-sm">No products found</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -199,27 +257,42 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium text-red-600">Low Stock Alert</p>
-                    <p className="text-sm text-gray-500">3 products are running low on inventory</p>
+                {metrics.lowStock > 0 && (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-red-600">Low Stock Alert</p>
+                      <p className="text-sm text-gray-500">{metrics.lowStock} products are running low on inventory</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium text-yellow-600">Pending Reviews</p>
-                    <p className="text-sm text-gray-500">5 customer reviews awaiting approval</p>
+                )}
+                {metrics.outOfStock > 0 && (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-red-600">Out of Stock</p>
+                      <p className="text-sm text-gray-500">{metrics.outOfStock} products are out of stock</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <p className="font-medium text-green-600">Sales Target</p>
-                    <p className="text-sm text-gray-500">Monthly target achieved: 108%</p>
+                )}
+                {metrics.totalProducts > 0 && (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-green-600">Store Status</p>
+                      <p className="text-sm text-gray-500">{metrics.totalProducts} products available in store</p>
+                    </div>
                   </div>
-                </div>
+                )}
+                {metrics.totalRevenue > 0 && (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                    <div>
+                      <p className="font-medium text-blue-600">Revenue Update</p>
+                      <p className="text-sm text-gray-500">Total revenue: ${metrics.totalRevenue.toLocaleString()}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
