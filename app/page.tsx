@@ -1,5 +1,6 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
+import { DeliverySection } from "@/components/delivery-section"
 import { ProductGrid } from "@/components/product-grid"
 import { CartSidebar } from "@/components/cart-sidebar"
 import { FeaturesSection } from "@/components/features-section"
@@ -13,6 +14,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <HeroSection />
+      <DeliverySection />
       <ProductGrid />
       <FeaturesSection />
       <ReviewsSection />
