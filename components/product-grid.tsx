@@ -33,7 +33,7 @@ export function ProductGrid() {
   const [loading, setLoading] = useState(true)
   const { dispatch } = useCart()
 
-  const categories = ["All", "iPhone", "MacBook", "Linea Blanca"]
+  const categories = ["iPhone", "MacBook", "Linea Blanca"]
 
   useEffect(() => {
     fetchProducts()
@@ -328,7 +328,7 @@ export function ProductGrid() {
                         src="/ad1.jpeg"
                         alt="Advertisement"
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-6">
