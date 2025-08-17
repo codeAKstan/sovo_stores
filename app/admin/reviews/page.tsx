@@ -1,34 +1,63 @@
 "use client"
-import { useState, useEffect } from "react"
-import type React from "react"
 
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAdmin } from "@/contexts/admin-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Star, Plus, AlertCircle, CheckCircle } from "lucide-react"
+import { ArrowLeft, Plus, Star, AlertCircle, CheckCircle, Upload, X } from "lucide-react"
+import Image from "next/image"
+
+interface Product {
+  _id: string
+  name: string
+  category: string
+  images: string[]
+}
+
+interface Review {
+  _id: string
+  customerName: string
+  customerImage?: string
+  productId: {
+    _id: string
+    name: string
+    category: string
+    images: string[]
+  }
+  productName: string
+  rating: number
+  comment: string
+  location: string
+  status: string
+  createdAt: string
+}
 
 export default function ManageReviewsPage() {
   const { currentAdmin, isAuthenticated } = useAdmin()
   const router = useRouter()
-  const [reviews, setReviews] = useState<any[]>([])
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [products, setProducts] = useState<Product[]>([])
   const [showAddForm, setShowAddForm] = useState(false)
   const [formData, setFormData] = useState({
     customerName: "",
-    productName: "",
+    productId: "",
     rating: "5",
     comment: "",
     location: "",
   })
+  const [customerImageFile, setCustomerImageFile] = useState<File | null>(null)
+  const [customerImagePreview, setCustomerImagePreview] = useState<string>('')
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
+  const [formLoading, setFormLoading] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -36,47 +65,100 @@ export default function ManageReviewsPage() {
       return
     }
     loadReviews()
+    loadProducts()
   }, [isAuthenticated, router])
 
-  const loadReviews = () => {
-    const savedReviews = JSON.parse(localStorage.getItem("adminReviews") || "[]")
-    setReviews(savedReviews)
+  const loadReviews = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/admin/reviews')
+      if (response.ok) {
+        const data = await response.json()
+        setReviews(data.reviews)
+      } else {
+        setError('Failed to load reviews')
+      }
+    } catch (err) {
+      setError('Error loading reviews')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadProducts = async () => {
+    try {
+      const response = await fetch('/api/admin/products')
+      if (response.ok) {
+        const data = await response.json()
+        setProducts(data.products)
+      } else {
+        setError('Failed to load products')
+      }
+    } catch (err) {
+      setError('Error loading products')
+    }
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setCustomerImageFile(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setCustomerImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setCustomerImageFile(null)
+    setCustomerImagePreview('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setSuccess("")
-    setLoading(true)
+    setFormLoading(true)
 
     try {
-      const existingReviews = JSON.parse(localStorage.getItem("adminReviews") || "[]")
-
-      const newReview = {
-        id: Date.now().toString(),
-        ...formData,
-        rating: Number.parseInt(formData.rating),
-        createdAt: new Date().toISOString(),
-        status: "approved",
+      const submitFormData = new FormData()
+      submitFormData.append('customerName', formData.customerName)
+      submitFormData.append('productId', formData.productId)
+      submitFormData.append('rating', formData.rating)
+      submitFormData.append('comment', formData.comment)
+      submitFormData.append('location', formData.location)
+      
+      if (customerImageFile) {
+        submitFormData.append('customerImage', customerImageFile)
       }
 
-      existingReviews.push(newReview)
-      localStorage.setItem("adminReviews", JSON.stringify(existingReviews))
-
-      setSuccess("Review added successfully!")
-      setFormData({
-        customerName: "",
-        productName: "",
-        rating: "5",
-        comment: "",
-        location: "",
+      const response = await fetch('/api/admin/reviews', {
+        method: 'POST',
+        body: submitFormData,
       })
-      setShowAddForm(false)
-      loadReviews()
+
+      if (response.ok) {
+        setSuccess("Review added successfully!")
+        setFormData({
+          customerName: "",
+          productId: "",
+          rating: "5",
+          comment: "",
+          location: "",
+        })
+        removeImage()
+        setShowAddForm(false)
+        loadReviews()
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to add review')
+      }
     } catch (err) {
       setError("An error occurred while adding the review")
     } finally {
-      setLoading(false)
+      setFormLoading(false)
     }
   }
 
@@ -150,8 +232,39 @@ export default function ManageReviewsPage() {
                         value={formData.customerName}
                         onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
                         required
-                        placeholder="e.g., Carlos Hernández"
+                        placeholder="Customer's full name"
                       />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="productId">Product</Label>
+                      <Select
+                        value={formData.productId}
+                        onValueChange={(value) => setFormData({ ...formData, productId: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a product" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {products.map((product) => (
+                            <SelectItem key={product._id} value={product._id}>
+                              <div className="flex items-center space-x-2">
+                                {product.images[0] && (
+                                  <Image
+                                    src={product.images[0]}
+                                    alt={product.name}
+                                    width={24}
+                                    height={24}
+                                    className="rounded"
+                                  />
+                                )}
+                                <span>{product.name}</span>
+                                <Badge variant="outline" className="text-xs">{product.category}</Badge>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -160,19 +273,7 @@ export default function ManageReviewsPage() {
                         id="location"
                         value={formData.location}
                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        required
-                        placeholder="e.g., San Salvador, El Salvador"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="productName">Product Name</Label>
-                      <Input
-                        id="productName"
-                        value={formData.productName}
-                        onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
-                        required
-                        placeholder="e.g., iPhone 15 Pro Max"
+                        placeholder="Customer's location"
                       />
                     </div>
 
@@ -196,6 +297,40 @@ export default function ManageReviewsPage() {
                     </div>
                   </div>
 
+                  {/* Customer Image Upload */}
+                  <div className="space-y-2">
+                    <Label htmlFor="customerImage">Customer Image (Optional)</Label>
+                    <div className="flex items-center space-x-4">
+                      <Input
+                        id="customerImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="flex-1"
+                      />
+                      {customerImagePreview && (
+                        <div className="relative">
+                          <Image
+                            src={customerImagePreview}
+                            alt="Customer preview"
+                            width={60}
+                            height={60}
+                            className="rounded-lg object-cover"
+                          />
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                            onClick={removeImage}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="comment">Review Comment</Label>
                     <Textarea
@@ -212,8 +347,8 @@ export default function ManageReviewsPage() {
                     <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={loading}>
-                      {loading ? "Adding..." : "Add Review"}
+                    <Button type="submit" disabled={formLoading}>
+                      {formLoading ? "Adding..." : "Add Review"}
                     </Button>
                   </div>
                 </form>
@@ -229,29 +364,55 @@ export default function ManageReviewsPage() {
             <CardDescription>Customer reviews in the system</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {reviews.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">No reviews added yet.</p>
-              ) : (
-                reviews.map((review) => (
-                  <div key={review.id} className="border rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <h4 className="font-medium text-gray-900">{review.customerName}</h4>
-                        <p className="text-sm text-gray-500">{review.location}</p>
-                        <p className="text-sm text-blue-600">{review.productName}</p>
+            {loading ? (
+              <p className="text-center py-8">Loading reviews...</p>
+            ) : (
+              <div className="space-y-4">
+                {reviews.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No reviews added yet.</p>
+                ) : (
+                  reviews.map((review) => (
+                    <div key={review._id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start space-x-3">
+                          {review.customerImage && (
+                            <Image
+                              src={review.customerImage}
+                              alt={review.customerName}
+                              width={48}
+                              height={48}
+                              className="rounded-full object-cover"
+                            />
+                          )}
+                          <div>
+                            <h4 className="font-medium text-gray-900">{review.customerName}</h4>
+                            <p className="text-sm text-gray-500">{review.location}</p>
+                            <div className="flex items-center space-x-2 mt-1">
+                              {review.productId?.images?.[0] && (
+                                <Image
+                                  src={review.productId.images[0]}
+                                  alt={review.productName}
+                                  width={20}
+                                  height={20}
+                                  className="rounded"
+                                />
+                              )}
+                              <p className="text-sm text-blue-600">{review.productName}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="flex">{renderStars(review.rating)}</div>
+                          <Badge variant="outline">Approved</Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="flex">{renderStars(review.rating)}</div>
-                        <Badge variant="outline">Approved</Badge>
-                      </div>
+                      <p className="text-gray-700 mb-2">{review.comment}</p>
+                      <p className="text-xs text-gray-400">Added: {new Date(review.createdAt).toLocaleDateString()}</p>
                     </div>
-                    <p className="text-gray-700 mb-2">{review.comment}</p>
-                    <p className="text-xs text-gray-400">Added: {new Date(review.createdAt).toLocaleDateString()}</p>
-                  </div>
-                ))
-              )}
-            </div>
+                  ))
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
