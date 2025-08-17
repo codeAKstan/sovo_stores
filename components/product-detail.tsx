@@ -5,6 +5,7 @@ import { Star, Heart, ShoppingCart, Truck, Shield, RotateCcw, ChevronLeft } from
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/contexts/cart-context"
+import { ProductReviews } from "@/components/product-reviews"
 import Link from "next/link"
 
 interface Product {
@@ -360,6 +361,9 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           </div>
         </div>
       )}
+      
+      {/* Customer Reviews Section */}
+      <ProductReviews productId={productId} />
     </div>
   )
 }
