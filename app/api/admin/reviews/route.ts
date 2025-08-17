@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Review from '@/lib/models/Review'
 import Product from '@/lib/models/Product'
-import { writeFile } from 'fs/promises'
-import path from 'path'
+import { put } from '@vercel/blob'
 
 // GET - Fetch all reviews
 export async function GET() {
@@ -56,24 +55,26 @@ export async function POST(request: NextRequest) {
     
     let customerImageUrl = ''
     
-    // Handle customer image upload if provided
+    // Handle customer image upload to Vercel Blob if provided
     if (customerImageFile && customerImageFile.size > 0) {
-      const bytes = await customerImageFile.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      
-      // Generate unique filename
-      const filename = `customer-${Date.now()}-${customerImageFile.name}`
-      const filepath = path.join(process.cwd(), 'public', 'customer-images', filename)
-      
-      // Ensure directory exists
-      const fs = require('fs')
-      const dir = path.dirname(filepath)
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true })
+      try {
+        // Generate unique filename
+        const filename = `customer-${Date.now()}-${customerImageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        
+        // Upload to Vercel Blob
+        const blob = await put(filename, customerImageFile, {
+          access: 'public',
+          handleUploadUrl: '/api/upload', // Optional: custom upload handler
+        })
+        
+        customerImageUrl = blob.url
+      } catch (uploadError) {
+        console.error('Error uploading image to Vercel Blob:', uploadError)
+        return NextResponse.json(
+          { error: 'Failed to upload customer image' },
+          { status: 500 }
+        )
       }
-      
-      await writeFile(filepath, buffer)
-      customerImageUrl = `/customer-images/${filename}`
     }
     
     // Create review

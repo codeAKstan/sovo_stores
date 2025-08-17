@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Plus, Star, AlertCircle, CheckCircle, Upload, X } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import { ArrowLeft, Plus, Star, AlertCircle, CheckCircle, Upload, X, ImageIcon } from "lucide-react"
 import Image from "next/image"
 
 interface Product {
@@ -54,6 +55,8 @@ export default function ManageReviewsPage() {
   })
   const [customerImageFile, setCustomerImageFile] = useState<File | null>(null)
   const [customerImagePreview, setCustomerImagePreview] = useState<string>('')
+  const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
@@ -102,18 +105,32 @@ export default function ManageReviewsPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select an image file')
+        return
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB')
+        return
+      }
+      
       setCustomerImageFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
         setCustomerImagePreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
+      setError('') // Clear any previous errors
     }
   }
 
   const removeImage = () => {
     setCustomerImageFile(null)
     setCustomerImagePreview('')
+    setUploadProgress(0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,6 +138,7 @@ export default function ManageReviewsPage() {
     setError("")
     setSuccess("")
     setFormLoading(true)
+    setIsUploading(true)
 
     try {
       const submitFormData = new FormData()
@@ -132,12 +150,17 @@ export default function ManageReviewsPage() {
       
       if (customerImageFile) {
         submitFormData.append('customerImage', customerImageFile)
+        setUploadProgress(50) // Simulate progress
       }
 
       const response = await fetch('/api/admin/reviews', {
         method: 'POST',
         body: submitFormData,
       })
+
+      if (customerImageFile) {
+        setUploadProgress(100)
+      }
 
       if (response.ok) {
         setSuccess("Review added successfully!")
@@ -159,6 +182,8 @@ export default function ManageReviewsPage() {
       setError("An error occurred while adding the review")
     } finally {
       setFormLoading(false)
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
@@ -207,7 +232,7 @@ export default function ManageReviewsPage() {
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle>Add Customer Review</CardTitle>
-                <CardDescription>Add a new customer review to the system</CardDescription>
+                <CardDescription>Add a new customer review with Vercel Blob image storage</CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -297,35 +322,55 @@ export default function ManageReviewsPage() {
                     </div>
                   </div>
 
-                  {/* Customer Image Upload */}
+                  {/* Enhanced Customer Image Upload with Vercel Blob */}
                   <div className="space-y-2">
                     <Label htmlFor="customerImage">Customer Image (Optional)</Label>
-                    <div className="flex items-center space-x-4">
-                      <Input
-                        id="customerImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="flex-1"
-                      />
-                      {customerImagePreview && (
-                        <div className="relative">
-                          <Image
-                            src={customerImagePreview}
-                            alt="Customer preview"
-                            width={60}
-                            height={60}
-                            className="rounded-lg object-cover"
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex-1">
+                          <Input
+                            id="customerImage"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            disabled={isUploading}
+                            className="cursor-pointer"
                           />
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="sm"
-                            className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                            onClick={removeImage}
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Supported formats: JPG, PNG, GIF. Max size: 5MB. Stored securely with Vercel Blob.
+                          </p>
+                        </div>
+                        {customerImagePreview && (
+                          <div className="relative">
+                            <Image
+                              src={customerImagePreview}
+                              alt="Customer preview"
+                              width={80}
+                              height={80}
+                              className="rounded-lg object-cover border-2 border-gray-200"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                              onClick={removeImage}
+                              disabled={isUploading}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Upload Progress */}
+                      {isUploading && uploadProgress > 0 && (
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Upload className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm text-gray-600">Uploading to Vercel Blob...</span>
+                          </div>
+                          <Progress value={uploadProgress} className="w-full" />
                         </div>
                       )}
                     </div>
@@ -344,11 +389,23 @@ export default function ManageReviewsPage() {
                   </div>
 
                   <div className="flex justify-end space-x-2">
-                    <Button type="button" variant="outline" onClick={() => setShowAddForm(false)}>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      onClick={() => setShowAddForm(false)}
+                      disabled={formLoading}
+                    >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={formLoading}>
-                      {formLoading ? "Adding..." : "Add Review"}
+                    <Button type="submit" disabled={formLoading || isUploading}>
+                      {formLoading ? (
+                        <>
+                          <Upload className="h-4 w-4 mr-2 animate-spin" />
+                          {isUploading ? 'Uploading...' : 'Adding...'}
+                        </>
+                      ) : (
+                        'Add Review'
+                      )}
                     </Button>
                   </div>
                 </form>
@@ -361,7 +418,7 @@ export default function ManageReviewsPage() {
         <Card>
           <CardHeader>
             <CardTitle>All Reviews</CardTitle>
-            <CardDescription>Customer reviews in the system</CardDescription>
+            <CardDescription>Customer reviews stored with Vercel Blob images</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -375,14 +432,18 @@ export default function ManageReviewsPage() {
                     <div key={review._id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-start space-x-3">
-                          {review.customerImage && (
+                          {review.customerImage ? (
                             <Image
                               src={review.customerImage}
                               alt={review.customerName}
                               width={48}
                               height={48}
-                              className="rounded-full object-cover"
+                              className="rounded-full object-cover border-2 border-gray-200"
                             />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                              <ImageIcon className="h-6 w-6 text-gray-400" />
+                            </div>
                           )}
                           <div>
                             <h4 className="font-medium text-gray-900">{review.customerName}</h4>
