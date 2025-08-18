@@ -306,6 +306,19 @@ export function ProductDetail({ productId }: ProductDetailProps) {
             </Button>
           </div>
 
+          {/* Fast Delivery Flier */}
+          <div className="border-t pt-6">
+            <div className="flex justify-center mb-6">
+              <div className="relative w-64 h-80 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                <img
+                  src="/fast-deli.jpeg"
+                  alt="Fast Delivery Flier"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Features */}
           {product.features && product.features.length > 0 && (
             <div className="border-t pt-6">
