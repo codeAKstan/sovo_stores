@@ -142,82 +142,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     <div className="mt-16 border-t pt-16">
       <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
       
-      {/* Reviews Summary */}
-      <div className="grid md:grid-cols-2 gap-8 mb-12">
-        {/* Overall Rating */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Overall Rating</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="text-4xl font-bold text-gray-900">
-                {reviewsData.averageRating}
-              </div>
-              <div>
-                <div className="flex items-center mb-1">
-                  {renderStars(reviewsData.averageRating, 'lg')}
-                </div>
-                <p className="text-sm text-gray-600">
-                  Based on {reviewsData.totalReviews} review{reviewsData.totalReviews !== 1 ? 's' : ''}
-                </p>
-              </div>
-            </div>
-            
-            {/* Rating Breakdown */}
-            <div className="space-y-2">
-              {[5, 4, 3, 2, 1].map((stars) => (
-                <div key={stars} className="flex items-center space-x-3">
-                  <span className="text-sm font-medium w-8">{stars}</span>
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <Progress 
-                    value={(reviewsData.ratingCounts[stars as keyof typeof reviewsData.ratingCounts] / reviewsData.totalReviews) * 100} 
-                    className="flex-1 h-2" 
-                  />
-                  <span className="text-sm text-gray-600 w-8">
-                    {reviewsData.ratingCounts[stars as keyof typeof reviewsData.ratingCounts]}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Review Highlights */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Review Highlights</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Total Reviews</span>
-                <Badge variant="outline">{reviewsData.totalReviews}</Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Average Rating</span>
-                <div className="flex items-center space-x-1">
-                  {renderStars(reviewsData.averageRating, 'sm')}
-                  <span className="text-sm font-medium">{reviewsData.averageRating}</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">5-Star Reviews</span>
-                <span className="text-sm font-medium">
-                  {Math.round((reviewsData.ratingCounts[5] / reviewsData.totalReviews) * 100)}%
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Recommended</span>
-                <span className="text-sm font-medium text-green-600">
-                  {Math.round(((reviewsData.ratingCounts[4] + reviewsData.ratingCounts[5]) / reviewsData.totalReviews) * 100)}%
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Individual Reviews */}
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-gray-900 mb-6">Customer Feedback</h3>
@@ -297,6 +221,48 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           </div>
         )}
       </div>
+      {/* Reviews Summary */}
+      <div className="grid md:grid-cols-2 gap-8 mb-12">
+        {/* Overall Rating */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Overall Rating</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="text-4xl font-bold text-gray-900">
+                {reviewsData.averageRating}
+              </div>
+              <div>
+                <div className="flex items-center mb-1">
+                  {renderStars(reviewsData.averageRating, 'lg')}
+                </div>
+                <p className="text-sm text-gray-600">
+                  Based on {reviewsData.totalReviews} review{reviewsData.totalReviews !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+            
+            {/* Rating Breakdown */}
+            <div className="space-y-2">
+              {[5, 4, 3, 2, 1].map((stars) => (
+                <div key={stars} className="flex items-center space-x-3">
+                  <span className="text-sm font-medium w-8">{stars}</span>
+                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <Progress 
+                    value={(reviewsData.ratingCounts[stars as keyof typeof reviewsData.ratingCounts] / reviewsData.totalReviews) * 100} 
+                    className="flex-1 h-2" 
+                  />
+                  <span className="text-sm text-gray-600 w-8">
+                    {reviewsData.ratingCounts[stars as keyof typeof reviewsData.ratingCounts]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>        
+      </div>
+
     </div>
   )
 }
