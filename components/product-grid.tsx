@@ -342,29 +342,9 @@ export function ProductGrid() {
                   </div>
                 )
                 
-                // Add ad2 after ad1
-                allItems.push(
-                  <div key="ad2-before-iphones" className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-                    <div className="relative h-64 bg-gray-50 overflow-hidden">
-                      <Image
-                        src="/ad2.jpeg"
-                        alt="Advertisement"
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
-                        Exclusive Deal
-                      </h3>
-                      <p className="text-gray-600 text-center">
-                        Don't miss our limited-time offers!
-                      </p>
-                    </div>
-                  </div>
-                )
+               
                 
-                // Add ad3 after ad2
+                // Add ad3 after ad1
                 allItems.push(
                   <div key="ad3-before-iphones" className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
                     <div className="relative h-64 bg-gray-50 overflow-hidden">
@@ -387,10 +367,34 @@ export function ProductGrid() {
                 )
               }
               
-              // 2. Add iPhone products after all ads
+              // 2. Add iPhone products after ads
               iPhoneProducts.forEach(product => {
                 allItems.push(renderProductCard(product))
               })
+              
+              // Add ad2 after iPhone products (before MacBooks)
+              if (iPhoneProducts.length > 0 && (selectedCategory === "All" || selectedCategory === "iPhone")) {
+                allItems.push(
+                  <div key="ad2-after-iphones" className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                    <div className="relative h-64 bg-gray-50 overflow-hidden">
+                      <Image
+                        src="/ad2.jpeg"
+                        alt="Advertisement"
+                        fill
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+                        Exclusive Deal
+                      </h3>
+                      <p className="text-gray-600 text-center">
+                        Don't miss our limited-time offers!
+                      </p>
+                    </div>
+                  </div>
+                )
+              }
               
               // 3. Add MacBook products
               macBookProducts.forEach(product => {
