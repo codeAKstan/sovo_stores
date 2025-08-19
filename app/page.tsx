@@ -16,9 +16,9 @@ export default function Home() {
       <HeroSection />
       <DeliverySection />
       <ProductGrid />
+      <ShippingGuaranteeSection />
       <FeaturesSection />
       <ReviewsSection />
-      <ShippingGuaranteeSection />
       <CartSidebar />
       <Footer />
       <PurchaseNotifications />
