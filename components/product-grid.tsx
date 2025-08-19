@@ -341,38 +341,38 @@ export function ProductGrid() {
                     </div>
                   </div>
                 )
-                
-               
-                
-                // Add ad3 after ad1
-                allItems.push(
-                  <div key="ad3-before-iphones" className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
-                    <div className="relative h-64 bg-gray-50 overflow-hidden">
-                      <Image
-                        src="/ad3.jpeg"
-                        alt="Advertisement"
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
-                        Best Prices
-                      </h3>
-                      <p className="text-gray-600 text-center">
-                        Quality products at unbeatable prices!
-                      </p>
-                    </div>
-                  </div>
-                )
               }
               
-              // 2. Add iPhone products after ads
-              iPhoneProducts.forEach(product => {
+              // 2. Add iPhone products with ad3 after first 2 products
+              iPhoneProducts.forEach((product, index) => {
                 allItems.push(renderProductCard(product))
+                
+                // Add ad3 after the first 2 iPhone products
+                if (index === 1 && iPhoneProducts.length > 2 && (selectedCategory === "All" || selectedCategory === "iPhone")) {
+                  allItems.push(
+                    <div key="ad3-after-two-iphones" className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
+                      <div className="relative h-64 bg-gray-50 overflow-hidden">
+                        <Image
+                          src="/ad3.jpeg"
+                          alt="Advertisement"
+                          fill
+                          className="object-contain group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
+                          Best Prices
+                        </h3>
+                        <p className="text-gray-600 text-center">
+                          Quality products at unbeatable prices!
+                        </p>
+                      </div>
+                    </div>
+                  )
+                }
               })
               
-              // Add ad2 after iPhone products (before MacBooks)
+              // Add ad2 after all iPhone products (before MacBooks)
               if (iPhoneProducts.length > 0 && (selectedCategory === "All" || selectedCategory === "iPhone")) {
                 allItems.push(
                   <div key="ad2-after-iphones" className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
