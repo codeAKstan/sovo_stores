@@ -12,7 +12,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { ArrowLeft, Plus, Star, AlertCircle, CheckCircle, Upload, X, ImageIcon } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ArrowLeft, Plus, Star, AlertCircle, CheckCircle, Upload, X, ImageIcon, Edit, Trash2 } from "lucide-react"
 import Image from "next/image"
 
 interface Product {
@@ -46,6 +47,7 @@ export default function ManageReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [showAddForm, setShowAddForm] = useState(false)
+  const [editingReview, setEditingReview] = useState<Review | null>(null)
   const [formData, setFormData] = useState({
     customerName: "",
     productId: "",
@@ -55,6 +57,7 @@ export default function ManageReviewsPage() {
   })
   const [customerImageFile, setCustomerImageFile] = useState<File | null>(null)
   const [customerImagePreview, setCustomerImagePreview] = useState<string>('')
+  const [keepExistingImage, setKeepExistingImage] = useState(true)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState("")
@@ -102,35 +105,67 @@ export default function ManageReviewsPage() {
     }
   }
 
+  const resetForm = () => {
+    setFormData({
+      customerName: "",
+      productId: "",
+      rating: "5",
+      comment: "",
+      location: "",
+    })
+    setCustomerImageFile(null)
+    setCustomerImagePreview('')
+    setKeepExistingImage(true)
+    setEditingReview(null)
+    setShowAddForm(false)
+  }
+
+  const handleEdit = (review: Review) => {
+    setEditingReview(review)
+    setFormData({
+      customerName: review.customerName,
+      productId: review.productId._id,
+      rating: String(review.rating),
+      comment: review.comment,
+      location: review.location,
+    })
+    setCustomerImagePreview(review.customerImage || '')
+    setKeepExistingImage(true)
+    setShowAddForm(true)
+  }
+
+  const handleDelete = async (reviewId: string) => {
+    if (!confirm('Are you sure you want to delete this review?')) return
+    
+    try {
+      const response = await fetch(`/api/admin/reviews/${reviewId}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        setSuccess('Review deleted successfully!')
+        loadReviews()
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to delete review')
+      }
+    } catch (err) {
+      setError('Error deleting review')
+    }
+  }
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        setError('Please select an image file')
-        return
-      }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        setError('Image size must be less than 5MB')
-        return
-      }
-      
       setCustomerImageFile(file)
+      setKeepExistingImage(false)
+      
       const reader = new FileReader()
       reader.onload = (e) => {
         setCustomerImagePreview(e.target?.result as string)
       }
       reader.readAsDataURL(file)
-      setError('') // Clear any previous errors
     }
-  }
-
-  const removeImage = () => {
-    setCustomerImageFile(null)
-    setCustomerImagePreview('')
-    setUploadProgress(0)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -150,46 +185,47 @@ export default function ManageReviewsPage() {
       
       if (customerImageFile) {
         submitFormData.append('customerImage', customerImageFile)
-        setUploadProgress(50) // Simulate progress
+      }
+      
+      if (editingReview) {
+        submitFormData.append('keepExistingImage', String(keepExistingImage))
       }
 
-      const response = await fetch('/api/admin/reviews', {
-        method: 'POST',
+      const url = editingReview 
+        ? `/api/admin/reviews/${editingReview._id}` 
+        : '/api/admin/reviews'
+      const method = editingReview ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
         body: submitFormData,
       })
 
-      if (customerImageFile) {
-        setUploadProgress(100)
-      }
-
       if (response.ok) {
-        setSuccess("Review added successfully!")
-        setFormData({
-          customerName: "",
-          productId: "",
-          rating: "5",
-          comment: "",
-          location: "",
-        })
-        removeImage()
-        setShowAddForm(false)
+        const data = await response.json()
+        setSuccess(data.message)
+        resetForm()
         loadReviews()
       } else {
-        const data = await response.json()
-        setError(data.error || 'Failed to add review')
+        const errorData = await response.json()
+        setError(errorData.error || `Failed to ${editingReview ? 'update' : 'add'} review`)
       }
-    } catch (err) {
-      setError("An error occurred while adding the review")
+    } catch (err: any) {
+      setError(err.message || "An error occurred")
     } finally {
       setFormLoading(false)
       setIsUploading(false)
-      setUploadProgress(0)
     }
   }
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star key={i} className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-current" : "text-gray-300"}`} />
+      <Star
+        key={i}
+        className={`h-4 w-4 ${
+          i < rating ? "text-yellow-400 fill-current" : "text-gray-300"
+        }`}
+      />
     ))
   }
 
@@ -210,219 +246,213 @@ export default function ManageReviewsPage() {
               </Button>
             </div>
             <div className="flex items-center space-x-4">
-              <Star className="h-6 w-6 text-blue-600" />
+              <Star className="h-6 w-6 text-yellow-500" />
               <h1 className="text-xl font-semibold text-gray-900">Manage Reviews</h1>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Add Review Section */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
-            <Button onClick={() => setShowAddForm(!showAddForm)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Review
-            </Button>
-          </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Success/Error Messages */}
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+        {success && (
+          <Alert className="border-green-200 bg-green-50 mb-6">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">{success}</AlertDescription>
+          </Alert>
+        )}
 
-          {showAddForm && (
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle>Add Customer Review</CardTitle>
-                <CardDescription>Add a new customer review with Vercel Blob image storage</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {error && (
-                    <Alert variant="destructive">
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  {success && (
-                    <Alert className="border-green-200 bg-green-50">
-                      <CheckCircle className="h-4 w-4 text-green-600" />
-                      <AlertDescription className="text-green-800">{success}</AlertDescription>
-                    </Alert>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="customerName">Customer Name</Label>
-                      <Input
-                        id="customerName"
-                        value={formData.customerName}
-                        onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
-                        required
-                        placeholder="Customer's full name"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="productId">Product</Label>
-                      <Select
-                        value={formData.productId}
-                        onValueChange={(value) => setFormData({ ...formData, productId: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a product" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {products.map((product) => (
-                            <SelectItem key={product._id} value={product._id}>
-                              <div className="flex items-center space-x-2">
-                                {product.images[0] && (
-                                  <Image
-                                    src={product.images[0]}
-                                    alt={product.name}
-                                    width={24}
-                                    height={24}
-                                    className="rounded"
-                                  />
-                                )}
-                                <span>{product.name}</span>
-                                <Badge variant="outline" className="text-xs">{product.category}</Badge>
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Input
-                        id="location"
-                        value={formData.location}
-                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        placeholder="Customer's location"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="rating">Rating</Label>
-                      <Select
-                        value={formData.rating}
-                        onValueChange={(value) => setFormData({ ...formData, rating: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select rating" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="5">5 Stars</SelectItem>
-                          <SelectItem value="4">4 Stars</SelectItem>
-                          <SelectItem value="3">3 Stars</SelectItem>
-                          <SelectItem value="2">2 Stars</SelectItem>
-                          <SelectItem value="1">1 Star</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  {/* Enhanced Customer Image Upload with Vercel Blob */}
-                  <div className="space-y-2">
-                    <Label htmlFor="customerImage">Customer Image (Optional)</Label>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-4">
-                        <div className="flex-1">
-                          <Input
-                            id="customerImage"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            disabled={isUploading}
-                            className="cursor-pointer"
-                          />
-                          <p className="text-xs text-gray-500 mt-1">
-                            Supported formats: JPG, PNG, GIF. Max size: 5MB. Stored securely with Vercel Blob.
-                          </p>
-                        </div>
-                        {customerImagePreview && (
-                          <div className="relative">
-                            <Image
-                              src={customerImagePreview}
-                              alt="Customer preview"
-                              width={80}
-                              height={80}
-                              className="rounded-lg object-cover border-2 border-gray-200"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                              onClick={removeImage}
-                              disabled={isUploading}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Upload Progress */}
-                      {isUploading && uploadProgress > 0 && (
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Upload className="h-4 w-4 text-blue-600" />
-                            <span className="text-sm text-gray-600">Uploading to Vercel Blob...</span>
-                          </div>
-                          <Progress value={uploadProgress} className="w-full" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="comment">Review Comment</Label>
-                    <Textarea
-                      id="comment"
-                      value={formData.comment}
-                      onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                      required
-                      placeholder="Customer's review comment..."
-                      rows={4}
-                    />
-                  </div>
-
-                  <div className="flex justify-end space-x-2">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setShowAddForm(false)}
-                      disabled={formLoading}
-                    >
-                      Cancel
-                    </Button>
-                    <Button type="submit" disabled={formLoading || isUploading}>
-                      {formLoading ? (
-                        <>
-                          <Upload className="h-4 w-4 mr-2 animate-spin" />
-                          {isUploading ? 'Uploading...' : 'Adding...'}
-                        </>
-                      ) : (
-                        'Add Review'
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          )}
+        {/* Add Review Button */}
+        <div className="mb-6">
+          <Button onClick={() => setShowAddForm(true)} disabled={showAddForm}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Review
+          </Button>
         </div>
+
+        {/* Add/Edit Review Form */}
+        <Dialog open={showAddForm} onOpenChange={(open) => {
+          if (!open) resetForm()
+          setShowAddForm(open)
+        }}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editingReview ? 'Edit Review' : 'Add New Review'}</DialogTitle>
+              <DialogDescription>
+                {editingReview ? 'Update the review information' : 'Add a new customer review with optional image'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Customer Image Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="customerImage">Customer Image (Optional)</Label>
+                <div className="flex items-center space-x-4">
+                  <Input
+                    id="customerImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="flex-1"
+                  />
+                  {isUploading && (
+                    <div className="flex items-center space-x-2">
+                      <Upload className="h-4 w-4 animate-spin" />
+                      <span className="text-sm text-gray-600">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Image Preview */}
+                {customerImagePreview && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                    <div className="relative inline-block">
+                      <Image
+                        src={customerImagePreview}
+                        alt="Customer preview"
+                        width={80}
+                        height={80}
+                        className="rounded-full object-cover border-2 border-gray-200"
+                      />
+                      {editingReview && keepExistingImage && (
+                        <Badge className="absolute -top-2 -right-2" variant="secondary">
+                          Current
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Customer Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="customerName">Customer Name</Label>
+                  <Input
+                    id="customerName"
+                    value={formData.customerName}
+                    onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+                    required
+                    placeholder="e.g., Carlos Hernández"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <Input
+                    id="location"
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    required
+                    placeholder="e.g., San Salvador, El Salvador"
+                  />
+                </div>
+              </div>
+
+              {/* Product and Rating */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="productId">Product</Label>
+                  <Select
+                    value={formData.productId}
+                    onValueChange={(value) => setFormData({ ...formData, productId: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a product" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products.map((product) => (
+                        <SelectItem key={product._id} value={product._id}>
+                          <div className="flex items-center space-x-2">
+                            {product.images[0] && (
+                              <Image
+                                src={product.images[0]}
+                                alt={product.name}
+                                width={20}
+                                height={20}
+                                className="rounded"
+                              />
+                            )}
+                            <span>{product.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="rating">Rating</Label>
+                  <Select
+                    value={formData.rating}
+                    onValueChange={(value) => setFormData({ ...formData, rating: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="5">5 Stars - Excellent</SelectItem>
+                      <SelectItem value="4">4 Stars - Very Good</SelectItem>
+                      <SelectItem value="3">3 Stars - Good</SelectItem>
+                      <SelectItem value="2">2 Stars - Fair</SelectItem>
+                      <SelectItem value="1">1 Star - Poor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Review Comment */}
+              <div className="space-y-2">
+                <Label htmlFor="comment">Review Comment</Label>
+                <Textarea
+                  id="comment"
+                  value={formData.comment}
+                  onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                  required
+                  placeholder="Write the customer's review..."
+                  rows={4}
+                />
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={resetForm}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={formLoading || isUploading}>
+                  {formLoading ? (
+                    <>
+                      <Upload className="h-4 w-4 mr-2 animate-spin" />
+                      {editingReview ? 'Updating...' : 'Adding...'}
+                    </>
+                  ) : (
+                    editingReview ? 'Update Review' : 'Add Review'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Existing Reviews */}
         <Card>
           <CardHeader>
-            <CardTitle>All Reviews</CardTitle>
-            <CardDescription>Customer reviews stored with Vercel Blob images</CardDescription>
+            <CardTitle>All Reviews ({reviews.length})</CardTitle>
+            <CardDescription>Manage customer reviews with edit and delete options</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <p className="text-center py-8">Loading reviews...</p>
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading reviews...</p>
+              </div>
             ) : (
               <div className="space-y-4">
                 {reviews.length === 0 ? (
@@ -465,6 +495,23 @@ export default function ManageReviewsPage() {
                         <div className="flex items-center space-x-2">
                           <div className="flex">{renderStars(review.rating)}</div>
                           <Badge variant="outline">Approved</Badge>
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEdit(review)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(review._id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                       <p className="text-gray-700 mb-2">{review.comment}</p>
