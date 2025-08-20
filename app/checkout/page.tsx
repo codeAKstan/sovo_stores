@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useCart } from "@/contexts/cart-context"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -22,6 +23,7 @@ interface BankDetails {
 
 export default function CheckoutPage() {
   const { state } = useCart()
+  const router = useRouter()
   const [step, setStep] = useState(1)
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const [isCardProcessing, setIsCardProcessing] = useState(false)
@@ -126,8 +128,40 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = () => {
-    // Here you would integrate with payment processing
-    alert("Order placed successfully!")
+    // Generate a random order number
+    const orderNumber = `SO-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
+    
+    // Get product names from cart items
+    const productNames = state.items.map(item => item.name).join(', ')
+    
+    // Calculate total from cart
+    const orderTotal = (subtotal + shipping + tax).toFixed(2)
+    
+    // Create order data
+    const orderData = {
+      orderNumber,
+      products: productNames,
+      status: 'being processed',
+      timestamp: new Date().toISOString(),
+      total: orderTotal,
+      items: state.items,
+      customerInfo: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        address: formData.address
+      }
+    }
+    
+    // Store current order for immediate display
+    localStorage.setItem('currentOrder', JSON.stringify(orderData))
+    
+    // Also store in order history
+    const existingOrders = JSON.parse(localStorage.getItem('allOrders') || '[]')
+    existingOrders.push(orderData)
+    localStorage.setItem('allOrders', JSON.stringify(existingOrders))
+    
+    // Redirect to track orders page
+    router.push('/track-orders')
   }
 
   if (state.items.length === 0) {
