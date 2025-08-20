@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-// Remove this line: const [showCardErrorModal, setShowCardErrorModal] = useState(false);
+import { useState, useEffect } from "react"
 import { useCart } from "@/contexts/cart-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,14 +11,23 @@ import { ArrowLeft, CreditCard, Truck, Shield, Check, Building2, Copy, Loader2 }
 import Link from "next/link"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { X } from "lucide-react";
+import { X } from "lucide-react"
+
+interface BankDetails {
+  bankName: string
+  accountHolderName: string
+  accountNumber: string
+  address: string
+}
 
 export default function CheckoutPage() {
   const { state } = useCart()
   const [step, setStep] = useState(1)
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const [isCardProcessing, setIsCardProcessing] = useState(false)
-  const [showCardErrorModal, setShowCardErrorModal] = useState(false); // Move this line here
+  const [showCardErrorModal, setShowCardErrorModal] = useState(false)
+  const [bankDetails, setBankDetails] = useState<BankDetails | null>(null)
+  const [bankDetailsLoading, setBankDetailsLoading] = useState(false)
   const [formData, setFormData] = useState({
     // Shipping Information
     firstName: "",
@@ -53,13 +61,45 @@ export default function CheckoutPage() {
     shippingMethod: "standard",
   })
 
+  // Calculate totals
   const subtotal = state.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const originalTotal = state.items.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0)
   const savings = originalTotal - subtotal
-  const shipping =
-    formData.shippingMethod === "express" ? 5.99 : 0
+  const shipping = formData.shippingMethod === "express" ? 5.99 : 0
   const tax = subtotal * 0.08
   const total = subtotal + shipping + tax
+
+  // Load bank details when component mounts
+  useEffect(() => {
+    loadBankDetails()
+  }, [])
+
+  const loadBankDetails = async () => {
+    setBankDetailsLoading(true)
+    try {
+      const response = await fetch('/api/bank-details')
+      if (response.ok) {
+        const data = await response.json()
+        setBankDetails(data.bankDetails)
+      } else {
+        console.error('Failed to load bank details')
+      }
+    } catch (error) {
+      console.error('Error loading bank details:', error)
+    } finally {
+      setBankDetailsLoading(false)
+    }
+  }
+
+  const copyToClipboard = async (text: string, fieldName: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedField(fieldName)
+      setTimeout(() => setCopiedField(null), 2000) // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy: ', err)
+    }
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -73,7 +113,7 @@ export default function CheckoutPage() {
       setTimeout(() => {
         setIsCardProcessing(false)
         handleInputChange("paymentMethod", "bank")
-        setShowCardErrorModal(true);
+        setShowCardErrorModal(true)
       }, 10000)
       return
     }
@@ -87,7 +127,7 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = () => {
     // Here you would integrate with payment processing
-    alert("Order placed successfully! (This is a demo)")
+    alert("Order placed successfully!")
   }
 
   if (state.items.length === 0) {
@@ -326,7 +366,7 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                {/* Step 3: Payment Information */}
+                {/* Step 3: Payment Information - Updated Bank Transfer Section */}
                 {step === 3 && (
                   <div className="space-y-6">
                     {/* Payment Method Selection */}
@@ -377,10 +417,10 @@ export default function CheckoutPage() {
                       </div>
                     )}
 
-                    {/* Card Payment Form */}
+                    {/* Card Payment Form - Keep existing code */}
                     {formData.paymentMethod === "card" && !isCardProcessing && (
                       <div className="space-y-4">
-                        <div className="flex items-center space-x-2 mb-4">
+                                   <div className="flex items-center space-x-2 mb-4">
                           <CreditCard className="w-5 h-5 text-gray-600" />
                           <span className="font-medium">Credit Card Information</span>
                         </div>
@@ -431,7 +471,7 @@ export default function CheckoutPage() {
                       </div>
                     )}
 
-                    {/* Bank Transfer Form */}
+                    {/* Bank Transfer Form - Updated to use backend data */}
                     {formData.paymentMethod === "bank" && (
                       <div className="space-y-4">
                         <div className="flex items-center space-x-2 mb-4">
@@ -439,64 +479,97 @@ export default function CheckoutPage() {
                           <span className="font-medium">Bank Transfer Information</span>
                         </div>
 
-                        <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700">Account Holder Name</Label>
-                            <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
-                              <span className="text-gray-900 font-medium">Sovo Stores</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => copyToClipboard('Sovo Stores', 'accountHolder')}
-                                className="h-8 px-2"
-                              >
-                                {copiedField === 'accountHolder' ? (
-                                  <Check className="w-4 h-4 text-green-600" />
-                                ) : (
-                                  <Copy className="w-4 h-4" />
-                                )}
-                              </Button>
-                            </div>
+                        {bankDetailsLoading ? (
+                          <div className="bg-gray-50 p-4 rounded-lg text-center">
+                            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-600" />
+                            <p className="text-sm text-gray-600">Loading bank details...</p>
                           </div>
+                        ) : bankDetails ? (
+                          <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">Bank Name</Label>
+                              <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
+                                <span className="text-gray-900 font-medium">{bankDetails.bankName}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(bankDetails.bankName, 'bankName')}
+                                  className="h-8 px-2"
+                                >
+                                  {copiedField === 'bankName' ? (
+                                    <Check className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
 
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700">Account Number</Label>
-                            <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
-                              <span className="text-gray-900 font-medium">120120120</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => copyToClipboard('120120120', 'accountNumber')}
-                                className="h-8 px-2"
-                              >
-                                {copiedField === 'accountNumber' ? (
-                                  <Check className="w-4 h-4 text-green-600" />
-                                ) : (
-                                  <Copy className="w-4 h-4" />
-                                )}
-                              </Button>
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">Account Holder Name</Label>
+                              <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
+                                <span className="text-gray-900 font-medium">{bankDetails.accountHolderName}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(bankDetails.accountHolderName, 'accountHolder')}
+                                  className="h-8 px-2"
+                                >
+                                  {copiedField === 'accountHolder' ? (
+                                    <Check className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
                             </div>
-                          </div>
 
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700">Routing Number</Label>
-                            <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
-                              <span className="text-gray-900 font-medium">123456</span>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => copyToClipboard('123456', 'routingNumber')}
-                                className="h-8 px-2"
-                              >
-                                {copiedField === 'routingNumber' ? (
-                                  <Check className="w-4 h-4 text-green-600" />
-                                ) : (
-                                  <Copy className="w-4 h-4" />
-                                )}
-                              </Button>
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">Account Number</Label>
+                              <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
+                                <span className="text-gray-900 font-medium">{bankDetails.accountNumber}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(bankDetails.accountNumber, 'accountNumber')}
+                                  className="h-8 px-2"
+                                >
+                                  {copiedField === 'accountNumber' ? (
+                                    <Check className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            </div>
+
+                            <div>
+                              <Label className="text-sm font-medium text-gray-700">Bank Address</Label>
+                              <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
+                                <span className="text-gray-900 font-medium">{bankDetails.address}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => copyToClipboard(bankDetails.address, 'bankAddress')}
+                                  className="h-8 px-2"
+                                >
+                                  {copiedField === 'bankAddress' ? (
+                                    <Check className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        ) : (
+                          <div className="bg-red-50 p-4 rounded-lg">
+                            <p className="text-sm font-medium text-red-900">Bank Details Unavailable</p>
+                            <p className="text-sm text-red-700 mt-1">
+                              Bank transfer information is currently unavailable. Please contact support or try again later.
+                            </p>
+                          </div>
+                        )}
 
                         <div className="bg-blue-50 p-4 rounded-lg">
                           <p className="text-sm font-medium text-blue-900">Transfer Instructions</p>
@@ -524,9 +597,10 @@ export default function CheckoutPage() {
                   </div>
                 )}
 
-                {/* Step 4: Review Order */}
+                {/* Step 4: Review Order - Updated to use backend data */}
                 {step === 4 && (
                   <div className="space-y-6">
+                    {/* ... existing shipping address code ... */}
                     <div>
                       <h3 className="font-medium mb-3">Shipping Address</h3>
                       <div className="text-sm text-gray-600">
@@ -553,14 +627,19 @@ export default function CheckoutPage() {
                         ) : (
                           <>
                             <p>Bank Transfer</p>
-                            <p>Account: 120120120</p>
-                            <p>Routing: 123456</p>
-                            <p>Sovo Stores</p>
+                            {bankDetails && (
+                              <>
+                                <p>Bank: {bankDetails.bankName}</p>
+                                <p>Account: {bankDetails.accountNumber}</p>
+                                <p>Holder: {bankDetails.accountHolderName}</p>
+                              </>
+                            )}
                           </>
                         )}
                       </div>
                     </div>
 
+                    {/* ... existing order items code ... */}
                     <div>
                       <h3 className="font-medium mb-3">Order Items</h3>
                       <div className="space-y-3">
@@ -688,47 +767,36 @@ export default function CheckoutPage() {
 
       <Footer />
       {/* Card Error Modal */}
-{showCardErrorModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 relative">
-      <button
-        onClick={() => setShowCardErrorModal(false)}
-        className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-      >
-        <X className="w-6 h-6" />
-      </button>
-      <div className="flex flex-col items-center justify-center text-center space-y-4">
-        <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
-          <X className="w-8 h-8 text-white" />
+      {showCardErrorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 relative">
+            <button
+              onClick={() => setShowCardErrorModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+                <X className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900">Card Error</h3>
+              <p className="text-gray-600">An error occured.</p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <button
+                onClick={() => {
+                  setShowCardErrorModal(false)
+                  handleInputChange("paymentMethod", "bank")
+                }}
+                className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900">Card Error</h3>
-        <p className="text-gray-600">An error occured.</p>
-      </div>
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <button
-          onClick={() => {
-            setShowCardErrorModal(false);
-            handleInputChange("paymentMethod", "bank");
-          }}
-          className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   )
-}
-
-
-const copyToClipboard = async (text: string, fieldName: string) => {
-  try {
-    await navigator.clipboard.writeText(text)
-    setCopiedField(fieldName)
-    setTimeout(() => setCopiedField(null), 2000) // Reset after 2 seconds
-  } catch (err) {
-    console.error('Failed to copy: ', err)
-  }
 }

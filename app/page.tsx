@@ -8,6 +8,7 @@ import { ShippingGuaranteeSection } from "@/components/shipping-guarantee-sectio
 import { Footer } from "@/components/footer"
 import { ReviewsSection } from "@/components/reviews-section"
 import { PurchaseNotifications } from "@/components/purchase-notifications"
+import { Suspense } from "react"
 
 export default function Home() {
   return (
@@ -15,7 +16,23 @@ export default function Home() {
       <Header />
       <HeroSection />
       <DeliverySection />
-      <ProductGrid />
+      <Suspense fallback={
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discover our premium collection of iPhones, MacBooks, and home appliances with unbeatable prices and quality
+              </p>
+            </div>
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+            </div>
+          </div>
+        </section>
+      }>
+        <ProductGrid />
+      </Suspense>
       <ShippingGuaranteeSection />
       <FeaturesSection />
       <ReviewsSection />
