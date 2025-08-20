@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 const defaultNav = [
-  { label: "📱 Cellphones", caret: true, href: "/cellphones", description: "Latest smartphones & accessories" },
-  { label: "💻 Laptops", caret: true, href: "/laptops", description: "Premium computing devices" },
-  { label: "🏠 Linea Blanca", caret: true, href: "/linea-blanca", description: "Refrigeradoras, lavadoras y más" },
+  { label: "📱 Cellphones", caret: true, href: "/?category=iPhone", description: "Latest smartphones & accessories" },
+  { label: "💻 Laptops", caret: true, href: "/?category=MacBook", description: "Premium computing devices" },
+  { label: "🏠 Linea Blanca", caret: true, href: "/?category=Linea Blanca", description: "Refrigeradoras, lavadoras y más" },
   { label: "🎮 Gaming", caret: true, href: "/gaming", description: "Consoles, PCs & accessories" },
 ]
 

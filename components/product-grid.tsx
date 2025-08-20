@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { Star, Heart, ShoppingCart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -27,13 +28,22 @@ interface Product {
 }
 
 export function ProductGrid() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
+  const searchParams = useSearchParams()
+  const categoryFromUrl = searchParams.get('category')
+  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl || "All")
   const [favorites, setFavorites] = useState<string[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const { dispatch } = useCart()
 
   const categories = ["iPhone", "MacBook", "Linea Blanca"]
+
+  // Update selected category when URL parameter changes
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl)
+    }
+  }, [categoryFromUrl])
 
   useEffect(() => {
     fetchProducts()
