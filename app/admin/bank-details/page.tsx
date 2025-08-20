@@ -8,70 +8,143 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ArrowLeft, CreditCard, AlertCircle, CheckCircle, Eye, EyeOff } from "lucide-react"
+import { ArrowLeft, CreditCard, AlertCircle, CheckCircle, Eye, EyeOff, Trash2 } from "lucide-react"
+
+interface BankDetails {
+  _id?: string
+  bankName: string
+  accountHolderName: string
+  accountNumber: string
+  address: string
+  createdAt?: string
+  updatedAt?: string
+}
 
 export default function BankDetailsPage() {
-  const { currentAdmin, isAuthenticated } = useAdmin()
+  const { currentAdmin, isAuthenticated, token } = useAdmin()
   const router = useRouter()
-  const [bankDetails, setBankDetails] = useState<any>(null)
-  const [formData, setFormData] = useState({
+  const [bankDetails, setBankDetails] = useState<BankDetails | null>(null)
+  const [formData, setFormData] = useState<BankDetails>({
     bankName: "",
-    accountName: "",
+    accountHolderName: "",
     accountNumber: "",
-    routingNumber: "",
-    accountType: "",
-    swiftCode: "",
-    address: "",
-    country: "",
+    address: ""
   })
   const [showAccountNumber, setShowAccountNumber] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [loading, setLoading] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/admin/login")
       return
     }
-    loadBankDetails()
-  }, [isAuthenticated, router])
+    if (token) {
+      loadBankDetails()
+    }
+  }, [isAuthenticated, token, router])
 
-  const loadBankDetails = () => {
-    const savedDetails = localStorage.getItem("bankDetails")
-    if (savedDetails) {
-      const details = JSON.parse(savedDetails)
-      setBankDetails(details)
-      setFormData(details)
-    } else {
-      setIsEditing(true)
+  const loadBankDetails = async () => {
+    if (!token) return
+    
+    try {
+      const response = await fetch('/api/admin/bank-details', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setBankDetails(data.bankDetails)
+        setFormData(data.bankDetails)
+      } else if (response.status === 404) {
+        // No bank details found, show form
+        setIsEditing(true)
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to load bank details')
+      }
+    } catch (err) {
+      setError('Failed to load bank details')
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!token) return
+    
     setError("")
     setSuccess("")
     setLoading(true)
 
     try {
-      const bankData = {
-        ...formData,
-        updatedAt: new Date().toISOString(),
-        updatedBy: currentAdmin?.name,
-      }
+      const method = bankDetails ? 'PUT' : 'POST'
+      const response = await fetch('/api/admin/bank-details', {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      })
 
-      localStorage.setItem("bankDetails", JSON.stringify(bankData))
-      setBankDetails(bankData)
-      setSuccess("Bank details saved successfully!")
-      setIsEditing(false)
+      const data = await response.json()
+
+      if (response.ok) {
+        setBankDetails(data.bankDetails)
+        setSuccess(bankDetails ? 'Bank details updated successfully!' : 'Bank details created successfully!')
+        setIsEditing(false)
+      } else {
+        setError(data.error || 'An error occurred')
+      }
     } catch (err) {
-      setError("An error occurred while saving bank details")
+      setError('An error occurred while saving bank details')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (!token) return
+    if (!confirm('Are you sure you want to delete your bank details? This action cannot be undone.')) {
+      return
+    }
+
+    setIsDeleting(true)
+    setError("")
+    setSuccess("")
+
+    try {
+      const response = await fetch('/api/admin/bank-details', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.ok) {
+        setBankDetails(null)
+        setFormData({
+          bankName: "",
+          accountHolderName: "",
+          accountNumber: "",
+          address: ""
+        })
+        setSuccess('Bank details deleted successfully!')
+        setIsEditing(true)
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to delete bank details')
+      }
+    } catch (err) {
+      setError('An error occurred while deleting bank details')
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -119,7 +192,19 @@ export default function BankDetailsPage() {
                   {bankDetails ? "Current bank details on file" : "Add your bank account information"}
                 </CardDescription>
               </div>
-              {bankDetails && !isEditing && <Button onClick={() => setIsEditing(true)}>Edit Details</Button>}
+              {bankDetails && !isEditing && (
+                <div className="flex space-x-2">
+                  <Button onClick={() => setIsEditing(true)}>Edit Details</Button>
+                  <Button 
+                    variant="destructive" 
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </Button>
+                </div>
+              )}
             </div>
           </CardHeader>
           <CardContent>
@@ -138,10 +223,9 @@ export default function BankDetailsPage() {
                   </Alert>
                 )}
 
-                {/* Bank Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="bankName">Bank Name</Label>
+                    <Label htmlFor="bankName">Bank Name *</Label>
                     <Input
                       id="bankName"
                       value={formData.bankName}
@@ -152,18 +236,18 @@ export default function BankDetailsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="accountName">Account Holder Name</Label>
+                    <Label htmlFor="accountHolderName">Account Holder Name *</Label>
                     <Input
-                      id="accountName"
-                      value={formData.accountName}
-                      onChange={(e) => setFormData({ ...formData, accountName: e.target.value })}
+                      id="accountHolderName"
+                      value={formData.accountHolderName}
+                      onChange={(e) => setFormData({ ...formData, accountHolderName: e.target.value })}
                       required
                       placeholder="Account holder's full name"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="accountNumber">Account Number</Label>
+                    <Label htmlFor="accountNumber">Account Number *</Label>
                     <div className="relative">
                       <Input
                         id="accountNumber"
@@ -186,73 +270,14 @@ export default function BankDetailsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="routingNumber">Routing Number</Label>
-                    <Input
-                      id="routingNumber"
-                      value={formData.routingNumber}
-                      onChange={(e) => setFormData({ ...formData, routingNumber: e.target.value })}
-                      placeholder="Bank routing number"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="accountType">Account Type</Label>
-                    <Select
-                      value={formData.accountType}
-                      onValueChange={(value) => setFormData({ ...formData, accountType: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="checking">Checking</SelectItem>
-                        <SelectItem value="savings">Savings</SelectItem>
-                        <SelectItem value="business">Business</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="swiftCode">SWIFT Code (International)</Label>
-                    <Input
-                      id="swiftCode"
-                      value={formData.swiftCode}
-                      onChange={(e) => setFormData({ ...formData, swiftCode: e.target.value })}
-                      placeholder="SWIFT/BIC code"
-                    />
-                  </div>
-                </div>
-
-                {/* Address Information */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Bank Address</Label>
+                    <Label htmlFor="address">Bank Address *</Label>
                     <Input
                       id="address"
                       value={formData.address}
                       onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      required
                       placeholder="Bank's physical address"
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Select
-                      value={formData.country}
-                      onValueChange={(value) => setFormData({ ...formData, country: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="SV">El Salvador</SelectItem>
-                        <SelectItem value="GT">Guatemala</SelectItem>
-                        <SelectItem value="HN">Honduras</SelectItem>
-                        <SelectItem value="CR">Costa Rica</SelectItem>
-                        <SelectItem value="PA">Panama</SelectItem>
-                        <SelectItem value="US">United States</SelectItem>
-                      </SelectContent>
-                    </Select>
                   </div>
                 </div>
 
@@ -264,6 +289,8 @@ export default function BankDetailsPage() {
                       onClick={() => {
                         setIsEditing(false)
                         setFormData(bankDetails)
+                        setError("")
+                        setSuccess("")
                       }}
                     >
                       Cancel
@@ -285,14 +312,14 @@ export default function BankDetailsPage() {
                           <span className="text-gray-500">Bank Name:</span> {bankDetails.bankName}
                         </p>
                         <p>
-                          <span className="text-gray-500">Account Holder:</span> {bankDetails.accountName}
+                          <span className="text-gray-500">Account Holder:</span> {bankDetails.accountHolderName}
                         </p>
                         <p>
                           <span className="text-gray-500">Account Number:</span>{" "}
                           {maskAccountNumber(bankDetails.accountNumber)}
                         </p>
                         <p>
-                          <span className="text-gray-500">Account Type:</span> {bankDetails.accountType}
+                          <span className="text-gray-500">Address:</span> {bankDetails.address}
                         </p>
                       </div>
                     </div>
@@ -300,17 +327,12 @@ export default function BankDetailsPage() {
                       <h4 className="font-medium text-gray-900 mb-2">Additional Details</h4>
                       <div className="space-y-2 text-sm">
                         <p>
-                          <span className="text-gray-500">Routing Number:</span> {bankDetails.routingNumber || "N/A"}
-                        </p>
-                        <p>
-                          <span className="text-gray-500">SWIFT Code:</span> {bankDetails.swiftCode || "N/A"}
-                        </p>
-                        <p>
-                          <span className="text-gray-500">Country:</span> {bankDetails.country || "N/A"}
+                          <span className="text-gray-500">Created:</span>{" "}
+                          {bankDetails.createdAt ? new Date(bankDetails.createdAt).toLocaleDateString() : "N/A"}
                         </p>
                         <p>
                           <span className="text-gray-500">Last Updated:</span>{" "}
-                          {new Date(bankDetails.updatedAt).toLocaleDateString()}
+                          {bankDetails.updatedAt ? new Date(bankDetails.updatedAt).toLocaleDateString() : "N/A"}
                         </p>
                       </div>
                     </div>

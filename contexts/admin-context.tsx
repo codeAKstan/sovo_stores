@@ -14,6 +14,7 @@ interface Admin {
 interface AdminContextType {
   currentAdmin: Admin | null
   isAuthenticated: boolean
+  token: string | null
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
   signup: (email: string, password: string, name: string) => Promise<boolean>
@@ -27,16 +28,18 @@ const AdminContext = createContext<AdminContextType | undefined>(undefined)
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [currentAdmin, setCurrentAdmin] = useState<Admin | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Check if admin is logged in on mount
-    const token = localStorage.getItem("adminToken")
+    const savedToken = localStorage.getItem("adminToken")
     const savedAdmin = localStorage.getItem("currentAdmin")
     
-    if (token && savedAdmin) {
+    if (savedToken && savedAdmin) {
       try {
         setCurrentAdmin(JSON.parse(savedAdmin))
+        setToken(savedToken)
         setIsAuthenticated(true)
       } catch (error) {
         console.error('Error parsing saved admin data:', error)
@@ -72,6 +75,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         setCurrentAdmin(data.admin)
+        setToken(data.token)
         setIsAuthenticated(true)
         localStorage.setItem("adminToken", data.token)
         localStorage.setItem("currentAdmin", JSON.stringify(data.admin))
@@ -88,6 +92,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     setCurrentAdmin(null)
+    setToken(null)
     setIsAuthenticated(false)
     localStorage.removeItem("adminToken")
     localStorage.removeItem("currentAdmin")
@@ -107,6 +112,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (response.ok) {
         setCurrentAdmin(data.admin)
+        setToken(data.token)
         setIsAuthenticated(true)
         localStorage.setItem("adminToken", data.token)
         localStorage.setItem("currentAdmin", JSON.stringify(data.admin))
@@ -128,7 +134,6 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     role: "super-admin" | "admin",
   ): Promise<boolean> => {
     try {
-      const token = localStorage.getItem("adminToken")
       const response = await fetch('/api/admin/add', {
         method: 'POST',
         headers: {
@@ -151,6 +156,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       value={{
         currentAdmin,
         isAuthenticated,
+        token,
         login,
         logout,
         signup,
