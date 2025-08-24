@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
 const defaultNav = [
-  { label: "📱 Cellphones", caret: true, href: "/?category=iPhone", description: "Latest smartphones & accessories" },
-  { label: "💻 Laptops", caret: true, href: "/?category=MacBook", description: "Premium computing devices" },
-  { label: "🏠 Linea Blanca", caret: true, href: "/?category=Linea Blanca", description: "Refrigeradoras, lavadoras y más" },
-  { label: "🎮 Gaming", caret: true, href: "/gaming", description: "Consoles, PCs & accessories" },
+  { label: "📱 Celulares", caret: true, href: "/?category=iPhone", description: "Los últimos teléfonos y accesorios" },
+  { label: "💻 Laptops", caret: true, href: "/?category=MacBook", description: "Computadoras de primera" },
+  { label: "🏠 Línea Blanca", caret: true, href: "/?category=Linea Blanca", description: "Refris, lavadoras y más chunches" },
+  { label: "🎮 Gaming", caret: true, href: "/gaming", description: "Consolas, PCs y chunches para jugar" },
 ]
 
 function SovoHeader({ navItems = defaultNav }) {
