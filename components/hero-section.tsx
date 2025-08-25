@@ -59,7 +59,7 @@ export function HeroSection() {
           {/* Text Content */}
           <div className="space-y-6 z-10">
             <div className="space-y-2">
-              <p className="text-blue-300 font-medium tracking-wide uppercase text-sm">Limited Time Offer</p>
+              <p className="text-blue-300 font-medium tracking-wide uppercase text-sm">Promo por tiempo chiquito, aprovechá vos</p>
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
                 Massive
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
