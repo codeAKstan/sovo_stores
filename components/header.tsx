@@ -33,7 +33,7 @@ function SovoHeader({ navItems = defaultNav }) {
           </SheetTrigger>
           <SheetContent side="left" className="w-80">
             <SheetHeader>
-              <SheetTitle>Browse</SheetTitle>
+              <SheetTitle>navegar</SheetTitle>
             </SheetHeader>
             <nav className="mt-4 grid gap-1">
               {navItems.map((item) => (
@@ -69,7 +69,7 @@ function SovoHeader({ navItems = defaultNav }) {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="What are you looking for?"
+            placeholder="¿Qué andás buscando vos?"
             aria-label="Search Sovo stores"
             className="h-11 pl-11 pr-4 rounded-full bg-white text-base placeholder:text-muted-foreground"
           />
