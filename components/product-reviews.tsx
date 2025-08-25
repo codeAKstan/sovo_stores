@@ -179,10 +179,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                             <span>{review.location}</span>
                           </div>
                         )}
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(review.createdAt)}</span>
-                        </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-1">
