@@ -12,6 +12,7 @@ interface Review {
   _id: string
   customerName: string
   customerImage?: string
+  productImage?: string
   rating: number
   comment: string
   location: string
@@ -187,6 +188,18 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                   </div>
                   
                   <p className="text-gray-700 leading-relaxed">{review.comment}</p>
+                  {review.productImage && (
+                    <div className="mt-4">
+                      <Image
+                        src={review.productImage}
+                        alt={review.customerName}
+                        width={128}
+                        height={128}
+                        className="rounded-md border border-gray-200"
+                      />
+                    </div>
+                  )}
+
                   
                   {/* Review Actions */}
                   <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-gray-100">
