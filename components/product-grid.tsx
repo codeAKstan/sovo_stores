@@ -119,9 +119,9 @@ export function ProductGrid() {
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Productos Destacados</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our premium collection of iPhones, MacBooks, and home appliances with unbeatable prices and quality
+              Descubre nuestra colección premium de iPhones, MacBooks y aparatos domésticos con precios inmejorables y calidad
             </p>
           </div>
           <div className="flex justify-center">
@@ -137,9 +137,9 @@ export function ProductGrid() {
       <div className="container mx-auto px-4">
         {/* Header section */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">Productos Destacados</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our premium collection of iPhones, MacBooks, and home appliances with unbeatable prices and quality
+            Descubre nuestra colección premium de iPhones, MacBooks y aparatos domésticos con precios inmejorables y calidad
           </p>
         </div>
 
@@ -343,10 +343,10 @@ export function ProductGrid() {
                     </div>
                     <div className="p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
-                        Special Offer
+                        Oferta especial
                       </h3>
                       <p className="text-gray-600 text-center">
-                        Check out our amazing deals!
+                        Descubre nuestras ofertas especiales!
                       </p>
                     </div>
                   </div>
@@ -371,10 +371,10 @@ export function ProductGrid() {
                       </div>
                       <div className="p-6">
                         <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
-                          Best Prices
+                          Precios mejores
                         </h3>
                         <p className="text-gray-600 text-center">
-                          Quality products at unbeatable prices!
+                          Productos de calidad a precios inmejorables!
                         </p>
                       </div>
                     </div>
@@ -396,10 +396,10 @@ export function ProductGrid() {
                     </div>
                     <div className="p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">
-                        Exclusive Deal
+                        Oferta exclusiva
                       </h3>
                       <p className="text-gray-600 text-center">
-                        Don't miss our limited-time offers!
+                        No te pierdas nuestras ofertas exclusivas!
                       </p>
                     </div>
                   </div>

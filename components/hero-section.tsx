@@ -61,16 +61,17 @@ export function HeroSection() {
             <div className="space-y-2">
               <p className="text-blue-300 font-medium tracking-wide uppercase text-sm">Promo por tiempo chiquito, aprovechá vos</p>
               <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                Massive
+                Massivo
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-                  50% OFF
+                  50% de Descuento 
                 </span>
-                Sale
+                Chollazo
               </h1>
+
             </div>
 
             <p className="text-xl text-gray-300 max-w-lg">
-              Get the latest iPhones and MacBooks at unbeatable prices. Premium technology, premium savings.
+              Consigue los últimos iPhones y MacBooks a precios inmejorables. Tecnología premium, ahorro premium.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
@@ -78,21 +79,21 @@ export function HeroSection() {
                 size="lg"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105"
               >
-                Shop Now
+                Comprar ahora
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-full font-semibold transition-all duration-300 bg-transparent"
               >
-                View All products
+                Ver todos los productos
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 rounded-full font-semibold transition-all duration-300 bg-transparent"
               >
-                Track Orders
+                Seguimiento de pedidos
               </Button>
             </div>
           </div>
@@ -103,15 +104,14 @@ export function HeroSection() {
               {heroProducts.map((product, index) => (
                 <div
                   key={product.id}
-                  className={`absolute transition-all duration-700 ease-in-out transform ${
-                    index === currentProductSlide
+                  className={`absolute transition-all duration-700 ease-in-out transform ${index === currentProductSlide
                       ? "opacity-100 translate-x-0 scale-100 z-10"
                       : index === (currentProductSlide + 1) % heroProducts.length
                         ? "opacity-30 translate-x-20 scale-90 z-5"
                         : index === (currentProductSlide - 1 + heroProducts.length) % heroProducts.length
                           ? "opacity-30 -translate-x-20 scale-90 z-5"
                           : "opacity-0 translate-x-40 scale-75 z-0"
-                  }`}
+                    }`}
                 >
                   <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 shadow-2xl">
                     <div className="text-center space-y-4">
