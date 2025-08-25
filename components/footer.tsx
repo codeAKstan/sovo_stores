@@ -71,7 +71,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-4 w-4 text-blue-400" />
-                <span className="text-gray-300">123 Tech Street, Silicon Valley, CA</span>
+                {/* <span className="text-gray-300">123 Tech Street, Silicon Valley, CA</span> */}
               </div>
             </div>
           </div>
@@ -94,79 +94,7 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Customer Service</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/support" className="text-gray-300 hover:text-white transition-colors">
-                  Support Center
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="text-gray-300 hover:text-white transition-colors">
-                  Shipping Info
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="text-gray-300 hover:text-white transition-colors">
-                  Returns & Exchanges
-                </Link>
-              </li>
-              <li>
-                <Link href="/warranty" className="text-gray-300 hover:text-white transition-colors">
-                  Warranty
-                </Link>
-              </li>
-              <li>
-                <Link href="/track-order" className="text-gray-300 hover:text-white transition-colors">
-                  Track Your Order
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Company</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/careers" className="text-gray-300 hover:text-white transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/press" className="text-gray-300 hover:text-white transition-colors">
-                  Press
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/affiliate" className="text-gray-300 hover:text-white transition-colors">
-                  Affiliate Program
-                </Link>
-              </li>
-              <li>
-                <Link href="/investors" className="text-gray-300 hover:text-white transition-colors">
-                  Investors
-                </Link>
-              </li>
-            </ul>
-          </div>
+      
         </div>
 
         {/* Social Media & Payment Methods */}
