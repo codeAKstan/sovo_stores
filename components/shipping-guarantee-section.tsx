@@ -7,10 +7,9 @@ export function ShippingGuaranteeSection() {
     <section className="py-16 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Shipping Across Latin America</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Envíos a toda Latinoamérica</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            We deliver premium electronics to your doorstep with our extensive shipping network covering major Latin
-            American countries. Your satisfaction is guaranteed with our 100% money-back promise.
+            Enviamos productos premium a tu casa con nuestra red de envíos extensa cubriendo países latinoamericanos. Tu satisfacción está garantizada con nuestra promesa de devolución de dinero.
           </p>
         </div>
 
@@ -18,7 +17,7 @@ export function ShippingGuaranteeSection() {
           <Image
             src="/travel.png"
 
-            alt="SovoStores shipping network across Latin America with money back guarantee"
+            alt="SovoStores shipping network en Latinoamérica con garantía de devolución de dinero"
             width={1200}
             height={600}
             className="w-full h-auto rounded-lg shadow-lg"
@@ -44,9 +43,9 @@ export function ShippingGuaranteeSection() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Wide Coverage</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Amplio Coverage</h3>
             <p className="text-gray-600">
-              Delivering to Guatemala, Panama, Mexico, Dominican Republic, Colombia, and more
+              Enviamos a Guatemala, Panamá, México, República Dominicana, Colombia, y más
             </p>
           </div>
 
@@ -61,8 +60,8 @@ export function ShippingGuaranteeSection() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Money Back Guarantee</h3>
-            <p className="text-gray-600">100% satisfaction guaranteed or your money back, no questions asked</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Garantía de devolución de dinero</h3>
+            <p className="text-gray-600">100% satisfacción garantizada o tu dinero devuelto, sin preguntas</p>
           </div>
 
           <div className="p-6">
@@ -76,8 +75,8 @@ export function ShippingGuaranteeSection() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Fast Delivery</h3>
-            <p className="text-gray-600">Express shipping options available with tracking for all orders</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Entrega rápida</h3>
+            <p className="text-gray-600">Opciones de envío express disponibles con seguimiento para todos los pedidos</p>
           </div>
         </div>
       </div>

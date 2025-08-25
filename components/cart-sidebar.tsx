@@ -122,7 +122,7 @@ export function CartSidebar() {
               <div className="space-y-2">
                 <Link href="/checkout">
                   <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold">
-                    Checkout
+                    Comprar
                   </Button>
                 </Link>
                 <Button
@@ -130,7 +130,7 @@ export function CartSidebar() {
                   className="w-full bg-transparent"
                   onClick={() => dispatch({ type: "CLOSE_CART" })}
                 >
-                  Continue Shopping
+                  Continuar comprando
                 </Button>
               </div>
             </div>

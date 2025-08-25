@@ -23,14 +23,14 @@ export function Footer() {
       {/* Newsletter Section */}
       <div className="bg-blue-600 py-12">
         <div className="container mx-auto px-4 text-center">
-          <h3 className="text-2xl font-bold mb-4">Stay Updated with Our Latest Deals</h3>
+          <h3 className="text-2xl font-bold mb-4">Mantente actualizado con nuestras últimas ofertas</h3>
           <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-            Get exclusive offers, new product announcements, and special discounts delivered to your inbox.
+            Recibe ofertas exclusivas, anuncios de nuevos productos y descuentos especiales en tu bandeja de entrada.
           </p>
           <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <Input
               type="email"
-              placeholder="Enter your email address"
+              placeholder="Ingresa tu dirección de correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="flex-1 bg-white text-gray-900 border-0 rounded-full px-6 py-3"
@@ -40,7 +40,7 @@ export function Footer() {
               type="submit"
               className="bg-white text-blue-600 hover:bg-gray-100 rounded-full px-8 py-3 font-semibold"
             >
-              Subscribe
+              Suscribirse
             </Button>
           </form>
         </div>
@@ -56,8 +56,8 @@ export function Footer() {
                 Sovo <span className="text-blue-400">stores</span>
               </h2>
               <p className="text-gray-300 leading-relaxed">
-                Your premium destination for the latest iPhones and MacBooks. We offer authentic products with
-                unbeatable prices and exceptional customer service.
+                Tu destino premium para los últimos iPhones y MacBooks. Ofrecemos productos auténticos con
+                precios incomparables y servicio al cliente excepcional.
               </p>
             </div>
             <div className="space-y-2">
@@ -78,7 +78,7 @@ export function Footer() {
 
           {/* Products */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Products</h3>
+            <h3 className="text-lg font-semibold mb-4">Productos</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/category/iphones" className="text-gray-300 hover:text-white transition-colors">
@@ -90,26 +90,7 @@ export function Footer() {
                   MacBooks
                 </Link>
               </li>
-              <li>
-                <Link href="/category/accessories" className="text-gray-300 hover:text-white transition-colors">
-                  Accessories
-                </Link>
-              </li>
-              <li>
-                <Link href="/deals" className="text-gray-300 hover:text-white transition-colors">
-                  Special Deals
-                </Link>
-              </li>
-              <li>
-                <Link href="/new-releases" className="text-gray-300 hover:text-white transition-colors">
-                  New Releases
-                </Link>
-              </li>
-              <li>
-                <Link href="/best-sellers" className="text-gray-300 hover:text-white transition-colors">
-                  Best Sellers
-                </Link>
-              </li>
+              
             </ul>
           </div>
 

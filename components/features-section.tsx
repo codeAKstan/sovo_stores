@@ -4,23 +4,23 @@ export function FeaturesSection() {
   const features = [
     {
       icon: Shield,
-      title: "100% Money Back Guarantee",
-      description: "Shop with confidence knowing your purchase is protected",
+      title: "Garantía de devolución de dinero",
+      description: "Compra con confianza sabiendo que tu compra está protegida",
     },
     {
       icon: DollarSign,
-      title: "Lowest Overall Order Cost",
-      description: "Best prices guaranteed with no hidden fees",
+      title: "Costo total de pedido más bajo",
+      description: "Mejores precios garantizados sin cargos ocultos",
     },
     {
       icon: Award,
-      title: "Premium & Luxury Brands",
-      description: "Only authentic products from trusted manufacturers",
+      title: "Marcas premium y de lujo",
+      description: "Solo productos auténticos de fabricantes confiables", 
     },
     {
       icon: Plane,
-      title: "Worldwide Shipping",
-      description: "Fast and reliable delivery to your doorstep",
+      title: "Envío internacional",
+      description: "Entrega rápida y confiable a tu puerta",
     },
   ]
 

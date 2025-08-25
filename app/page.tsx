@@ -20,9 +20,9 @@ export default function Home() {
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h2>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Productos destacados</h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Discover our premium collection of iPhones, MacBooks, and home appliances with unbeatable prices and quality
+                Descubre nuestra colección premium de iPhones, MacBooks y electrodomésticos con precios y calidad incomparables
               </p>
             </div>
             <div className="flex justify-center">
