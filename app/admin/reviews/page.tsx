@@ -57,7 +57,10 @@ export default function ManageReviewsPage() {
   })
   const [customerImageFile, setCustomerImageFile] = useState<File | null>(null)
   const [customerImagePreview, setCustomerImagePreview] = useState<string>('')
+  const [productImageFile, setProductImageFile] = useState<File | null>(null)
+  const [productImagePreview, setProductImagePreview] = useState<string>('')
   const [keepExistingImage, setKeepExistingImage] = useState(true)
+  const [keepExistingProductImage, setKeepExistingProductImage] = useState(true)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState("")
@@ -115,7 +118,10 @@ export default function ManageReviewsPage() {
     })
     setCustomerImageFile(null)
     setCustomerImagePreview('')
+    setProductImageFile(null)
+    setProductImagePreview('')
     setKeepExistingImage(true)
+    setKeepExistingProductImage(true)
     setEditingReview(null)
     setShowAddForm(false)
   }
@@ -130,7 +136,9 @@ export default function ManageReviewsPage() {
       location: review.location,
     })
     setCustomerImagePreview(review.customerImage || '')
+    setProductImagePreview(review.productImage || '')
     setKeepExistingImage(true)
+    setKeepExistingProductImage(true)
     setShowAddForm(true)
   }
 
@@ -168,6 +176,20 @@ export default function ManageReviewsPage() {
     }
   }
 
+  const handleProductImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setProductImageFile(file)
+      setKeepExistingProductImage(false)
+      
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setProductImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -187,8 +209,13 @@ export default function ManageReviewsPage() {
         submitFormData.append('customerImage', customerImageFile)
       }
       
+      if (productImageFile) {
+        submitFormData.append('productImage', productImageFile)
+      }
+      
       if (editingReview) {
         submitFormData.append('keepExistingImage', String(keepExistingImage))
+        submitFormData.append('keepExistingProductImage', String(keepExistingProductImage))
       }
 
       const url = editingReview 
@@ -331,6 +358,47 @@ export default function ManageReviewsPage() {
                 )}
               </div>
 
+              {/* Product Image Upload - NEW SECTION */}
+              <div className="space-y-2">
+                <Label htmlFor="productImage">Product Image (Optional)</Label>
+                <div className="flex items-center space-x-4">
+                  <Input
+                    id="productImage"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProductImageChange}
+                    className="flex-1"
+                  />
+                  {isUploading && (
+                    <div className="flex items-center space-x-2">
+                      <Upload className="h-4 w-4 animate-spin" />
+                      <span className="text-sm text-gray-600">Uploading...</span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Product Image Preview */}
+                {productImagePreview && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600 mb-2">Product Image Preview:</p>
+                    <div className="relative inline-block">
+                      <Image
+                        src={productImagePreview}
+                        alt="Product preview"
+                        width={120}
+                        height={120}
+                        className="rounded object-cover border-2 border-gray-200"
+                      />
+                      {editingReview && keepExistingProductImage && (
+                        <Badge className="absolute -top-2 -right-2" variant="secondary">
+                          Current
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
               {/* Customer Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">

@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     const comment = formData.get('comment') as string
     const location = formData.get('location') as string
     const customerImageFile = formData.get('customerImage') as File
+    const productImageFile = formData.get('productImage') as File
     
     // Validate required fields
     if (!customerName || !productId || !rating || !comment) {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest) {
     }
     
     let customerImageUrl = ''
+    let productImageUrl = ''
     
     // Handle customer image upload to Vercel Blob if provided
     if (customerImageFile && customerImageFile.size > 0) {
@@ -69,9 +71,31 @@ export async function POST(request: NextRequest) {
         
         customerImageUrl = blob.url
       } catch (uploadError) {
-        console.error('Error uploading image to Vercel Blob:', uploadError)
+        console.error('Error uploading customer image to Vercel Blob:', uploadError)
         return NextResponse.json(
           { error: 'Failed to upload customer image' },
+          { status: 500 }
+        )
+      }
+    }
+    
+    // Handle product image upload to Vercel Blob if provided
+    if (productImageFile && productImageFile.size > 0) {
+      try {
+        // Generate unique filename
+        const filename = `product-review-${Date.now()}-${productImageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        
+        // Upload to Vercel Blob
+        const blob = await put(filename, productImageFile, {
+          access: 'public',
+          handleUploadUrl: '/api/upload', // Optional: custom upload handler
+        })
+        
+        productImageUrl = blob.url
+      } catch (uploadError) {
+        console.error('Error uploading product image to Vercel Blob:', uploadError)
+        return NextResponse.json(
+          { error: 'Failed to upload product image' },
           { status: 500 }
         )
       }
@@ -81,6 +105,7 @@ export async function POST(request: NextRequest) {
     const review = new Review({
       customerName,
       customerImage: customerImageUrl,
+      productImage: productImageUrl,
       productId,
       productName: product.name,
       rating,
