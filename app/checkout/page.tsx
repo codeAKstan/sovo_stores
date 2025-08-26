@@ -37,19 +37,13 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
     address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "United States",
+    country: "El Salvador",
 
     // Billing Information
     billingFirstName: "",
     billingLastName: "",
     billingAddress: "",
-    billingCity: "",
-    billingState: "",
-    billingZipCode: "",
-    billingCountry: "United States",
+    billingCountry: "El Salvador",
     sameAsShipping: true,
 
     // Payment Information
@@ -138,7 +132,7 @@ export default function CheckoutPage() {
     if (step > 1) setStep(step - 1)
   }
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     // Generate a random order number
     const orderNumber = `SO-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
     
@@ -156,11 +150,34 @@ export default function CheckoutPage() {
       timestamp: new Date().toISOString(),
       total: orderTotal,
       items: state.items,
+      paymentMethod: formData.paymentMethod,
       customerInfo: {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
-        address: formData.address
+        address: formData.address,
+        phone: formData.phone,
+        country: formData.country
+      },
+      shippingMethod: formData.shippingMethod
+    }
+    
+    try {
+      // Send order details to admin
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      })
+      
+      if (response.ok) {
+        console.log('Order successfully sent to admin')
+      } else {
+        console.error('Failed to send order to admin')
       }
+    } catch (error) {
+      console.error('Error sending order to admin:', error)
     }
     
     // Store current order for immediate display
@@ -305,7 +322,7 @@ export default function CheckoutPage() {
                       />
                     </div>
 
-                    
+
 
                     {/* Shipping Method */}
                     <div>
@@ -385,32 +402,7 @@ export default function CheckoutPage() {
                           />
                         </div>
 
-                        <div className="grid md:grid-cols-3 gap-4">
-                          <div>
-                            <Label htmlFor="billingCity">Ciudad</Label>
-                            <Input
-                              id="billingCity"
-                              value={formData.billingCity}
-                              onChange={(e) => handleInputChange("billingCity", e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="billingState">Departamento</Label>
-                            <Input
-                              id="billingState"
-                              value={formData.billingState}
-                              onChange={(e) => handleInputChange("billingState", e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <Label htmlFor="billingZipCode">Código Postal</Label>
-                            <Input
-                              id="billingZipCode"
-                              value={formData.billingZipCode}
-                              onChange={(e) => handleInputChange("billingZipCode", e.target.value)}
-                            />
-                          </div>
-                        </div>
+
                       </>
                     )}
                   </div>
@@ -659,9 +651,7 @@ export default function CheckoutPage() {
                           {formData.firstName} {formData.lastName}
                         </p>
                         <p>{formData.address}</p>
-                        <p>
-                          {formData.city}, {formData.state} {formData.zipCode}
-                        </p>
+                        <p>{formData.country}</p>
                         <p>{formData.email}</p>
                         <p>{formData.phone}</p>
                       </div>
