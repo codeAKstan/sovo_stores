@@ -108,6 +108,17 @@ export default function CheckoutPage() {
   }
 
   const handleNextStep = () => {
+    // Validate shipping form on step 1
+    if (step === 1) {
+      const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address']
+      const missingFields = requiredFields.filter(field => !formData[field].trim())
+      
+      if (missingFields.length > 0) {
+        alert('Por favor llená todos los campos obligatorios, pues.')
+        return
+      }
+    }
+    
     // If moving from payment step and card is selected, simulate processing
     if (step === 3 && formData.paymentMethod === "card") {
       setIsCardProcessing(true)
@@ -169,10 +180,10 @@ export default function CheckoutPage() {
       <div className="min-h-screen bg-gray-50">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
-          <p className="text-gray-600 mb-8">Add some items to your cart before checking out.</p>
+          <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío, maje</h1>
+          <p className="text-gray-600 mb-8">Agregá algunas cositas a tu carrito antes de pagar, pues.</p>
           <Link href="/">
-            <Button>Continue Shopping</Button>
+            <Button>Seguir Comprando</Button>
           </Link>
         </div>
         <Footer />
@@ -188,9 +199,9 @@ export default function CheckoutPage() {
         <div className="mb-8">
           <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Continue Shopping
+            Seguir Comprando
           </Link>
-          <h1 className="text-3xl font-bold">Checkout</h1>
+          <h1 className="text-3xl font-bold">Pagar</h1>
         </div>
 
         {/* Progress Steps */}
@@ -212,10 +223,10 @@ export default function CheckoutPage() {
             ))}
           </div>
           <div className="flex justify-between mt-2 text-sm text-gray-600">
-            <span>Shipping</span>
-            <span>Billing</span>
-            <span>Payment</span>
-            <span>Review</span>
+            <span>Envío</span>
+            <span>Facturación</span>
+            <span>Pago</span>
+            <span>Revisar</span>
           </div>
         </div>
 
@@ -225,10 +236,10 @@ export default function CheckoutPage() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {step === 1 && "Shipping Information"}
-                  {step === 2 && "Billing Information"}
-                  {step === 3 && "Payment Information"}
-                  {step === 4 && "Review Your Order"}
+                  {step === 1 && "Información de Envío"}
+                  {step === 2 && "Información de Facturación"}
+                  {step === 3 && "Información de Pago"}
+                  {step === 4 && "Revisá tu Pedido"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -237,18 +248,20 @@ export default function CheckoutPage() {
                   <div className="space-y-4">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="firstName">First Name</Label>
+                        <Label htmlFor="firstName">Nombre *</Label>
                         <Input
                           id="firstName"
+                          placeholder="Tu nombre, pues"
                           value={formData.firstName}
                           onChange={(e) => handleInputChange("firstName", e.target.value)}
                           required
                         />
                       </div>
                       <div>
-                        <Label htmlFor="lastName">Last Name</Label>
+                        <Label htmlFor="lastName">Apellido *</Label>
                         <Input
                           id="lastName"
+                          placeholder="Tu apellido"
                           value={formData.lastName}
                           onChange={(e) => handleInputChange("lastName", e.target.value)}
                           required
@@ -258,20 +271,22 @@ export default function CheckoutPage() {
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">Correo *</Label>
                         <Input
                           id="email"
                           type="email"
+                          placeholder="tu@correo.com"
                           value={formData.email}
                           onChange={(e) => handleInputChange("email", e.target.value)}
                           required
                         />
                       </div>
                       <div>
-                        <Label htmlFor="phone">Phone</Label>
+                        <Label htmlFor="phone">Teléfono *</Label>
                         <Input
                           id="phone"
                           type="tel"
+                          placeholder="7123-4567"
                           value={formData.phone}
                           onChange={(e) => handleInputChange("phone", e.target.value)}
                           required
@@ -280,9 +295,10 @@ export default function CheckoutPage() {
                     </div>
 
                     <div>
-                      <Label htmlFor="address">Address</Label>
+                      <Label htmlFor="address">Dirección *</Label>
                       <Input
                         id="address"
+                        placeholder="Tu dirección completa, maje"
                         value={formData.address}
                         onChange={(e) => handleInputChange("address", e.target.value)}
                         required
@@ -293,11 +309,11 @@ export default function CheckoutPage() {
 
                     {/* Shipping Method */}
                     <div>
-                      <Label className="text-base font-medium">Shipping Method</Label>
+                      <Label className="text-base font-medium">Método de Envío</Label>
                       <div className="mt-2 space-y-2">
                         {[
-                          { id: "standard", name: "Free Shipping", time: "2-3 business days", price: 0 },
-                          { id: "express", name: "Express Shipping", time: "1-2 business days", price: 5.99 },
+                          { id: "standard", name: "Envío Gratis", time: "2-3 días hábiles", price: 0 },
+                          { id: "express", name: "Envío Express", time: "1-2 días hábiles", price: 5.99 },
                         ].map((method) => (
                           <label
                             key={method.id}
@@ -314,7 +330,7 @@ export default function CheckoutPage() {
                             <div className="flex-1">
                               <div className="flex justify-between">
                                 <span className="font-medium">{method.name}</span>
-                                <span className="font-medium">{method.price === 0 ? 'Free' : `$${method.price}`}</span>
+                                <span className="font-medium">{method.price === 0 ? 'Gratis' : `$${method.price}`}</span>
                               </div>
                               <span className="text-sm text-gray-600">{method.time}</span>
                             </div>
@@ -336,14 +352,14 @@ export default function CheckoutPage() {
                         onChange={(e) => handleInputChange("sameAsShipping", e.target.checked.toString())}
                         className="rounded"
                       />
-                      <Label htmlFor="sameAsShipping">Same as shipping address</Label>
+                      <Label htmlFor="sameAsShipping">Igual que la dirección de envío</Label>
                     </div>
 
                     {!formData.sameAsShipping && (
                       <>
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="billingFirstName">First Name</Label>
+                            <Label htmlFor="billingFirstName">Nombre</Label>
                             <Input
                               id="billingFirstName"
                               value={formData.billingFirstName}
@@ -351,7 +367,7 @@ export default function CheckoutPage() {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="billingLastName">Last Name</Label>
+                            <Label htmlFor="billingLastName">Apellido</Label>
                             <Input
                               id="billingLastName"
                               value={formData.billingLastName}
@@ -361,7 +377,7 @@ export default function CheckoutPage() {
                         </div>
 
                         <div>
-                          <Label htmlFor="billingAddress">Address</Label>
+                          <Label htmlFor="billingAddress">Dirección</Label>
                           <Input
                             id="billingAddress"
                             value={formData.billingAddress}
@@ -371,7 +387,7 @@ export default function CheckoutPage() {
 
                         <div className="grid md:grid-cols-3 gap-4">
                           <div>
-                            <Label htmlFor="billingCity">City</Label>
+                            <Label htmlFor="billingCity">Ciudad</Label>
                             <Input
                               id="billingCity"
                               value={formData.billingCity}
@@ -379,7 +395,7 @@ export default function CheckoutPage() {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="billingState">State</Label>
+                            <Label htmlFor="billingState">Departamento</Label>
                             <Input
                               id="billingState"
                               value={formData.billingState}
@@ -387,7 +403,7 @@ export default function CheckoutPage() {
                             />
                           </div>
                           <div>
-                            <Label htmlFor="billingZipCode">ZIP Code</Label>
+                            <Label htmlFor="billingZipCode">Código Postal</Label>
                             <Input
                               id="billingZipCode"
                               value={formData.billingZipCode}
@@ -405,7 +421,7 @@ export default function CheckoutPage() {
                   <div className="space-y-6">
                     {/* Payment Method Selection */}
                     <div>
-                      <Label className="text-base font-medium">Payment Method</Label>
+                      <Label className="text-base font-medium">Método de Pago</Label>
                       <div className="mt-3 space-y-3">
                         <label className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
                           <input
@@ -418,8 +434,8 @@ export default function CheckoutPage() {
                           />
                           <Building2 className="w-5 h-5 text-gray-600" />
                           <div>
-                            <span className="font-medium">Bank Transfer</span>
-                            <p className="text-sm text-gray-600">Direct bank account transfer</p>
+                            <span className="font-medium">Transferencia Bancaria</span>
+                            <p className="text-sm text-gray-600">Transferencia directa a cuenta bancaria</p>
                           </div>
                         </label>
                         
@@ -435,8 +451,8 @@ export default function CheckoutPage() {
                           />
                           <CreditCard className="w-5 h-5 text-gray-600" />
                           <div>
-                            <span className="font-medium">Pay with Card</span>
-                            <p className="text-sm text-gray-600">Credit or Debit Card</p>
+                            <span className="font-medium">Pagar con Tarjeta</span>
+                            <p className="text-sm text-gray-600">Tarjeta de Crédito o Débito</p>
                           </div>
                         </label>
                       </div>
@@ -446,8 +462,8 @@ export default function CheckoutPage() {
                     {isCardProcessing && (
                       <div className="bg-blue-50 p-6 rounded-lg text-center">
                         <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" />
-                        <p className="font-medium text-blue-900">Processing card payment...</p>
-                        <p className="text-sm text-blue-700 mt-1">Please wait while we verify your payment details.</p>
+                        <p className="font-medium text-blue-900">Procesando pago con tarjeta...</p>
+                        <p className="text-sm text-blue-700 mt-1">Esperá un toque mientras verificamos tu tarjeta, pues.</p>
                       </div>
                     )}
 
@@ -456,13 +472,14 @@ export default function CheckoutPage() {
                       <div className="space-y-4">
                                    <div className="flex items-center space-x-2 mb-4">
                           <CreditCard className="w-5 h-5 text-gray-600" />
-                          <span className="font-medium">Credit Card Information</span>
+                          <span className="font-medium">Información de Tarjeta</span>
                         </div>
 
                         <div>
-                          <Label htmlFor="cardName">Name on Card</Label>
+                          <Label htmlFor="cardName">Nombre en la Tarjeta</Label>
                           <Input
                             id="cardName"
+                            placeholder="Como aparece en tu tarjeta"
                             value={formData.cardName}
                             onChange={(e) => handleInputChange("cardName", e.target.value)}
                             required
@@ -470,7 +487,7 @@ export default function CheckoutPage() {
                         </div>
 
                         <div>
-                          <Label htmlFor="cardNumber">Card Number</Label>
+                          <Label htmlFor="cardNumber">Número de Tarjeta</Label>
                           <Input
                             id="cardNumber"
                             placeholder="1234 5678 9012 3456"
@@ -482,10 +499,10 @@ export default function CheckoutPage() {
 
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="expiryDate">Expiry Date</Label>
+                            <Label htmlFor="expiryDate">Fecha de Vencimiento</Label>
                             <Input
                               id="expiryDate"
-                              placeholder="MM/YY"
+                              placeholder="MM/AA"
                               value={formData.expiryDate}
                               onChange={(e) => handleInputChange("expiryDate", e.target.value)}
                               required
@@ -510,18 +527,18 @@ export default function CheckoutPage() {
                       <div className="space-y-4">
                         <div className="flex items-center space-x-2 mb-4">
                           <Building2 className="w-5 h-5 text-gray-600" />
-                          <span className="font-medium">Bank Transfer Information</span>
+                          <span className="font-medium">Información de Transferencia</span>
                         </div>
 
                         {bankDetailsLoading ? (
                           <div className="bg-gray-50 p-4 rounded-lg text-center">
                             <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-600" />
-                            <p className="text-sm text-gray-600">Loading bank details...</p>
+                            <p className="text-sm text-gray-600">Cargando datos del banco...</p>
                           </div>
                         ) : bankDetails ? (
                           <div className="bg-gray-50 p-4 rounded-lg space-y-3">
                             <div>
-                              <Label className="text-sm font-medium text-gray-700">Bank Name</Label>
+                              <Label className="text-sm font-medium text-gray-700">Nombre del Banco</Label>
                               <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
                                 <span className="text-gray-900 font-medium">{bankDetails.bankName}</span>
                                 <Button
@@ -540,7 +557,7 @@ export default function CheckoutPage() {
                             </div>
 
                             <div>
-                              <Label className="text-sm font-medium text-gray-700">Account Holder Name</Label>
+                              <Label className="text-sm font-medium text-gray-700">Nombre del Titular</Label>
                               <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
                                 <span className="text-gray-900 font-medium">{bankDetails.accountHolderName}</span>
                                 <Button
@@ -559,7 +576,7 @@ export default function CheckoutPage() {
                             </div>
 
                             <div>
-                              <Label className="text-sm font-medium text-gray-700">Account Number</Label>
+                              <Label className="text-sm font-medium text-gray-700">Número de Cuenta</Label>
                               <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
                                 <span className="text-gray-900 font-medium">{bankDetails.accountNumber}</span>
                                 <Button
@@ -578,7 +595,7 @@ export default function CheckoutPage() {
                             </div>
 
                             <div>
-                              <Label className="text-sm font-medium text-gray-700">Bank Address</Label>
+                              <Label className="text-sm font-medium text-gray-700">Dirección del Banco</Label>
                               <div className="mt-1 flex items-center justify-between p-3 bg-white border rounded-md">
                                 <span className="text-gray-900 font-medium">{bankDetails.address}</span>
                                 <Button
@@ -598,24 +615,24 @@ export default function CheckoutPage() {
                           </div>
                         ) : (
                           <div className="bg-red-50 p-4 rounded-lg">
-                            <p className="text-sm font-medium text-red-900">Bank Details Unavailable</p>
+                            <p className="text-sm font-medium text-red-900">Datos del Banco No Disponibles</p>
                             <p className="text-sm text-red-700 mt-1">
-                              Bank transfer information is currently unavailable. Please contact support or try again later.
+                              La información del banco no está disponible ahorita. Contactanos o intentá más tarde, pues.
                             </p>
                           </div>
                         )}
 
                         <div className="bg-blue-50 p-4 rounded-lg">
-                          <p className="text-sm font-medium text-blue-900">Transfer Instructions</p>
+                          <p className="text-sm font-medium text-blue-900">Instrucciones de Transferencia</p>
                           <p className="text-sm text-blue-700 mt-1">
-                            Please transfer the total amount to the account details shown above. Include your order number in the transfer reference. Use the copy buttons to easily copy the account details.
+                            Transferí el monto total a la cuenta de arriba, maje. Poné tu número de orden en la referencia. Usá los botones de copiar para que sea más fácil.
                           </p>
                         </div>
 
                         <div className="bg-yellow-50 p-4 rounded-lg">
-                          <p className="text-sm font-medium text-yellow-900">Bank Transfer Notice</p>
+                          <p className="text-sm font-medium text-yellow-900">Aviso de Transferencia</p>
                           <p className="text-sm text-yellow-700 mt-1">
-                            Your order will be processed after we receive the bank transfer. This may take 1-3 business days.
+                            Tu pedido se va a procesar cuando recibamos la transferencia. Puede tomar de 1 a 3 días hábiles, pues.
                           </p>
                         </div>
                       </div>
@@ -624,8 +641,8 @@ export default function CheckoutPage() {
                     <div className="bg-blue-50 p-4 rounded-lg flex items-start space-x-3">
                       <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
                       <div>
-                        <p className="text-sm font-medium text-blue-900">Secure Payment</p>
-                        <p className="text-sm text-blue-700">Your payment information is encrypted and secure.</p>
+                        <p className="text-sm font-medium text-blue-900">Pago Seguro</p>
+                        <p className="text-sm text-blue-700">Tu información de pago está encriptada y segura, maje.</p>
                       </div>
                     </div>
                   </div>
@@ -636,7 +653,7 @@ export default function CheckoutPage() {
                   <div className="space-y-6">
                     {/* ... existing shipping address code ... */}
                     <div>
-                      <h3 className="font-medium mb-3">Shipping Address</h3>
+                      <h3 className="font-medium mb-3">Dirección de Envío</h3>
                       <div className="text-sm text-gray-600">
                         <p>
                           {formData.firstName} {formData.lastName}
@@ -651,7 +668,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div>
-                      <h3 className="font-medium mb-3">Payment Method</h3>
+                      <h3 className="font-medium mb-3">Método de Pago</h3>
                       <div className="text-sm text-gray-600">
                         {formData.paymentMethod === "card" ? (
                           <>
@@ -660,12 +677,12 @@ export default function CheckoutPage() {
                           </>
                         ) : (
                           <>
-                            <p>Bank Transfer</p>
+                            <p>Transferencia Bancaria</p>
                             {bankDetails && (
                               <>
-                                <p>Bank: {bankDetails.bankName}</p>
-                                <p>Account: {bankDetails.accountNumber}</p>
-                                <p>Holder: {bankDetails.accountHolderName}</p>
+                                <p>Banco: {bankDetails.bankName}</p>
+                                <p>Cuenta: {bankDetails.accountNumber}</p>
+                                <p>Titular: {bankDetails.accountHolderName}</p>
                               </>
                             )}
                           </>
@@ -675,7 +692,7 @@ export default function CheckoutPage() {
 
                     {/* ... existing order items code ... */}
                     <div>
-                      <h3 className="font-medium mb-3">Order Items</h3>
+                      <h3 className="font-medium mb-3">Artículos del Pedido</h3>
                       <div className="space-y-3">
                         {state.items.map((item) => (
                           <div
@@ -709,7 +726,7 @@ export default function CheckoutPage() {
                 {/* Navigation Buttons */}
                 <div className="flex justify-between pt-6">
                   <Button variant="outline" onClick={handlePrevStep} disabled={step === 1}>
-                    Previous
+                    Anterior
                   </Button>
 
                   {step < 4 ? (
@@ -721,15 +738,15 @@ export default function CheckoutPage() {
                       {isCardProcessing ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          Processing...
+                          Procesando...
                         </>
                       ) : (
-                        "Next"
+                        "Siguiente"
                       )}
                     </Button>
                   ) : (
                     <Button onClick={handlePlaceOrder} className="bg-green-600 hover:bg-green-700">
-                      Place Order
+                      Hacer Pedido
                     </Button>
                   )}
                 </div>
@@ -741,7 +758,7 @@ export default function CheckoutPage() {
           <div className="lg:col-span-1">
             <Card className="sticky top-4">
               <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+                <CardTitle>Resumen del Pedido</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
@@ -763,15 +780,15 @@ export default function CheckoutPage() {
                     <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-green-600">
-                    <span>Savings</span>
+                    <span>Ahorros</span>
                     <span>-${savings.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Shipping</span>
+                    <span>Envío</span>
                     <span>${shipping.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Tax</span>
+                    <span>Impuestos</span>
                     <span>${tax.toFixed(2)}</span>
                   </div>
                 </div>
@@ -786,11 +803,11 @@ export default function CheckoutPage() {
                 <div className="text-xs text-gray-600 space-y-1">
                   <div className="flex items-center space-x-2">
                     <Truck className="w-4 h-4" />
-                    <span>Free returns within 30 days</span>
+                    <span>Devoluciones gratis hasta 30 días</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Shield className="w-4 h-4" />
-                    <span>100% Money back guarantee</span>
+                    <span>100% garantía de devolución</span>
                   </div>
                 </div>
               </CardContent>
@@ -814,8 +831,8 @@ export default function CheckoutPage() {
               <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
                 <X className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">Card Error</h3>
-              <p className="text-gray-600">An error occured.</p>
+              <h3 className="text-xl font-semibold text-gray-900">Error con la Tarjeta</h3>
+              <p className="text-gray-600">Ocurrió un error, maje.</p>
             </div>
             <div className="mt-6 pt-4 border-t border-gray-200">
               <button
@@ -825,7 +842,7 @@ export default function CheckoutPage() {
                 }}
                 className="w-full py-2 px-4 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
               >
-                Close
+                Cerrar
               </button>
             </div>
           </div>
