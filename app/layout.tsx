@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { CartProvider } from "@/contexts/cart-context"
 import { AdminProvider } from "@/contexts/admin-context"
+import WhatsAppWidget from "@/components/whatsapp-widget"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -30,7 +31,10 @@ html {
       </head>
       <body>
         <AdminProvider>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            {children}
+            <WhatsAppWidget />
+          </CartProvider>
         </AdminProvider>
       </body>
     </html>
