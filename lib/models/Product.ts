@@ -17,7 +17,8 @@ const ProductSchema = new mongoose.Schema({
   isNew: { type: Boolean, default: false },
   isSale: { type: Boolean, default: false },
   quantityRemaining: { type: Number, default: 0 },
-  sold: { type: Number, default: 0 }
+  sold: { type: Number, default: 0 },
+  sortOrder: { type: Number, default: 0 }
 }, {
   timestamps: true
 })

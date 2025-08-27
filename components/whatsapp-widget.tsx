@@ -27,7 +27,7 @@ export default function WhatsAppWidget({
       >
         <MessageCircle className="w-6 h-6" />
         <span className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          Chat with us
+          text here if you have any questions
         </span>
       </button>
     </div>

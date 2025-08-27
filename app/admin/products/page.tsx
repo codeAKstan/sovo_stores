@@ -14,7 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { ArrowLeft, Package, AlertCircle, CheckCircle, Upload, X, Edit, Trash2, Plus, Eye, Search } from "lucide-react"
+import { ArrowLeft, Package, AlertCircle, CheckCircle, Upload, X, Edit, Trash2, Plus, Eye, Search, GripVertical } from "lucide-react"
 
 interface Product {
   _id: string
@@ -34,6 +34,7 @@ interface Product {
   isSale: boolean
   quantityRemaining: number
   sold: number
+  sortOrder?: number
   createdAt: string
   updatedAt: string
 }
@@ -50,6 +51,8 @@ export default function ProductsManagementPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null)
+  const [draggedItem, setDraggedItem] = useState<string | null>(null)
+  const [dragOverItem, setDragOverItem] = useState<string | null>(null)
   
   // Form data for adding/editing products
   const [formData, setFormData] = useState({
@@ -289,11 +292,103 @@ export default function ProductsManagementPage() {
     }
   }
 
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+  const filteredProducts = products
+    .filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory
+      return matchesSearch && matchesCategory
+    })
+    .sort((a, b) => {
+      // Sort by sortOrder if available, otherwise by creation date
+      if (a.sortOrder !== undefined && b.sortOrder !== undefined) {
+        return a.sortOrder - b.sortOrder
+      }
+      if (a.sortOrder !== undefined) return -1
+      if (b.sortOrder !== undefined) return 1
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, productId: string) => {
+    setDraggedItem(productId)
+    e.dataTransfer.effectAllowed = 'move'
+  }
+
+  const handleDragOver = (e: React.DragEvent, productId: string) => {
+    e.preventDefault()
+    setDragOverItem(productId)
+  }
+
+  const handleDragLeave = () => {
+    setDragOverItem(null)
+  }
+
+  const handleDrop = async (e: React.DragEvent, targetProductId: string) => {
+    e.preventDefault()
+    
+    if (!draggedItem || draggedItem === targetProductId) {
+      setDraggedItem(null)
+      setDragOverItem(null)
+      return
+    }
+
+    try {
+      // Find the dragged and target products
+      const draggedProduct = filteredProducts.find(p => p._id === draggedItem)
+      const targetProduct = filteredProducts.find(p => p._id === targetProductId)
+      
+      if (!draggedProduct || !targetProduct) return
+
+      // Create new order for products
+      const updatedProducts = [...filteredProducts]
+      const draggedIndex = updatedProducts.findIndex(p => p._id === draggedItem)
+      const targetIndex = updatedProducts.findIndex(p => p._id === targetProductId)
+      
+      // Remove dragged item and insert at target position
+      const [removed] = updatedProducts.splice(draggedIndex, 1)
+      updatedProducts.splice(targetIndex, 0, removed)
+      
+      // Update sortOrder for all products
+      const sortOrderUpdates = updatedProducts.map((product, index) => ({
+        _id: product._id,
+        sortOrder: index
+      }))
+      
+      // Update products in state immediately for better UX
+      setProducts(prevProducts => 
+        prevProducts.map(product => {
+          const update = sortOrderUpdates.find(u => u._id === product._id)
+          return update ? { ...product, sortOrder: update.sortOrder } : product
+        })
+      )
+      
+      // Send update to backend
+      const response = await fetch('/api/products/reorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ updates: sortOrderUpdates }),
+      })
+      
+      if (response.ok) {
+        // Refresh products from database to get updated sortOrder
+        await fetchProducts()
+      } else {
+        console.error('Failed to update product order')
+        // Refresh products on error to restore original state
+        fetchProducts()
+      }
+      
+    } catch (error) {
+      console.error('Error reordering products:', error)
+      // Refresh products on error
+      fetchProducts()
+    }
+    
+    setDraggedItem(null)
+    setDragOverItem(null)
+  }
 
   if (!isAuthenticated || !currentAdmin) {
     return null
@@ -370,7 +465,9 @@ export default function ProductsManagementPage() {
         <Card>
           <CardHeader>
             <CardTitle>Products ({filteredProducts.length})</CardTitle>
-            <CardDescription>Manage your store products</CardDescription>
+            <CardDescription>
+              Manage your store products. Drag and drop products using the grip handle to reorder them as they appear on your store.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -388,6 +485,7 @@ export default function ProductsManagementPage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">Order</TableHead>
                       <TableHead>Product</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Price</TableHead>
@@ -399,7 +497,22 @@ export default function ProductsManagementPage() {
                   </TableHeader>
                   <TableBody>
                     {filteredProducts.map((product) => (
-                      <TableRow key={product._id}>
+                      <TableRow 
+                        key={product._id}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, product._id)}
+                        onDragOver={(e) => handleDragOver(e, product._id)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, product._id)}
+                        className={`
+                          ${draggedItem === product._id ? 'opacity-50' : ''}
+                          ${dragOverItem === product._id ? 'bg-blue-50 border-blue-200' : ''}
+                          cursor-move hover:bg-gray-50 transition-colors
+                        `}
+                      >
+                        <TableCell className="text-center">
+                          <GripVertical className="h-4 w-4 text-gray-400 mx-auto" />
+                        </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-3">
                             <img

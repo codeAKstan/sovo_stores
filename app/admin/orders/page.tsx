@@ -78,10 +78,10 @@ export default function AdminOrdersPage() {
       if (response.ok) {
         setOrders(data.orders)
       } else {
-        setError(data.error || "Error al cargar pedidos")
+        setError(data.error || "Error loading orders")
       }
     } catch (error) {
-      setError("Error de conexión")
+      setError("Connection error")
     } finally {
       setLoading(false)
     }
@@ -90,22 +90,22 @@ export default function AdminOrdersPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "being processed":
-        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Procesando</Badge>
+        return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Processing</Badge>
       case "shipped":
-        return <Badge variant="default"><Truck className="w-3 h-3 mr-1" />Enviado</Badge>
+        return <Badge variant="default"><Truck className="w-3 h-3 mr-1" />Shipped</Badge>
       case "delivered":
-        return <Badge variant="outline"><CheckCircle className="w-3 h-3 mr-1" />Entregado</Badge>
+        return <Badge variant="outline"><CheckCircle className="w-3 h-3 mr-1" />Delivered</Badge>
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
   }
 
   const getPaymentMethodText = (method: string) => {
-    return method === "bank" ? "Transferencia Bancaria" : "Tarjeta"
+    return method === "bank" ? "Bank Transfer" : "Card"
   }
 
   const getShippingMethodText = (method: string) => {
-    return method === "standard" ? "Envío Gratis" : "Envío Express"
+    return method === "standard" ? "Free Shipping" : "Express Shipping"
   }
 
   if (!isAuthenticated) {
@@ -118,23 +118,23 @@ export default function AdminOrdersPage() {
         <div className="mb-6">
           <Link href="/admin/dashboard" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver al Dashboard
+            Back to Dashboard
           </Link>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Pedidos de Clientes</h1>
-              <p className="text-gray-600">Gestiona todos los pedidos recibidos</p>
+              <h1 className="text-3xl font-bold text-gray-900">Customer Orders</h1>
+              <p className="text-gray-600">Manage all received orders</p>
             </div>
             <div className="flex items-center space-x-4">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Filtrar por estado" />
+                  <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos los pedidos</SelectItem>
-                  <SelectItem value="being processed">Procesando</SelectItem>
-                  <SelectItem value="shipped">Enviados</SelectItem>
-                  <SelectItem value="delivered">Entregados</SelectItem>
+                  <SelectItem value="all">All orders</SelectItem>
+                  <SelectItem value="being processed">Processing</SelectItem>
+                  <SelectItem value="shipped">Shipped</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -152,34 +152,34 @@ export default function AdminOrdersPage() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Package className="w-5 h-5 mr-2" />
-              Lista de Pedidos ({orders.length})
+              Orders List ({orders.length})
             </CardTitle>
             <CardDescription>
-              Todos los pedidos recibidos de los clientes
+              All orders received from customers
             </CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="text-center py-8">
-                <p className="text-gray-500">Cargando pedidos...</p>
+                <p className="text-gray-500">Loading orders...</p>
               </div>
             ) : orders.length === 0 ? (
               <div className="text-center py-8">
                 <Package className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500">No hay pedidos disponibles</p>
+                <p className="text-gray-500">No orders available</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Número de Pedido</TableHead>
-                      <TableHead>Cliente</TableHead>
+                      <TableHead>Order Number</TableHead>
+                      <TableHead>Customer</TableHead>
                       <TableHead>Total</TableHead>
-                      <TableHead>Pago</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Acciones</TableHead>
+                      <TableHead>Payment</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -195,7 +195,7 @@ export default function AdminOrdersPage() {
                         <TableCell className="font-medium">${order.total}</TableCell>
                         <TableCell>{getPaymentMethodText(order.paymentMethod)}</TableCell>
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
-                        <TableCell>{new Date(order.createdAt).toLocaleDateString('es-ES')}</TableCell>
+                        <TableCell>{new Date(order.createdAt).toLocaleDateString('en-US')}</TableCell>
                         <TableCell>
                           <Dialog>
                             <DialogTrigger asChild>
@@ -205,14 +205,14 @@ export default function AdminOrdersPage() {
                                 onClick={() => setSelectedOrder(order)}
                               >
                                 <Eye className="w-4 h-4 mr-1" />
-                                Ver Detalles
+                                View Details
                               </Button>
                             </DialogTrigger>
                             <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                               <DialogHeader>
-                                <DialogTitle>Detalles del Pedido {order.orderNumber}</DialogTitle>
+                                <DialogTitle>Order Details {order.orderNumber}</DialogTitle>
                                 <DialogDescription>
-                                  Información completa del pedido del cliente
+                                  Complete customer order information
                                 </DialogDescription>
                               </DialogHeader>
                               {selectedOrder && (
@@ -221,28 +221,28 @@ export default function AdminOrdersPage() {
                                   <div className="grid md:grid-cols-2 gap-6">
                                     <Card>
                                       <CardHeader>
-                                        <CardTitle className="text-lg">Información del Cliente</CardTitle>
+                                        <CardTitle className="text-lg">Customer Information</CardTitle>
                                       </CardHeader>
                                       <CardContent className="space-y-2">
-                                        <p><strong>Nombre:</strong> {selectedOrder.customerInfo.name}</p>
+                                        <p><strong>Name:</strong> {selectedOrder.customerInfo.name}</p>
                                         <p><strong>Email:</strong> {selectedOrder.customerInfo.email}</p>
-                                        <p><strong>Teléfono:</strong> {selectedOrder.customerInfo.phone}</p>
-                                        <p><strong>Dirección:</strong> {selectedOrder.customerInfo.address}</p>
-                                        <p><strong>País:</strong> {selectedOrder.customerInfo.country}</p>
+                                        <p><strong>Phone:</strong> {selectedOrder.customerInfo.phone}</p>
+                                        <p><strong>Address:</strong> {selectedOrder.customerInfo.address}</p>
+                                        <p><strong>Country:</strong> {selectedOrder.customerInfo.country}</p>
                                       </CardContent>
                                     </Card>
                                     
                                     <Card>
                                       <CardHeader>
-                                        <CardTitle className="text-lg">Información del Pedido</CardTitle>
+                                        <CardTitle className="text-lg">Order Information</CardTitle>
                                       </CardHeader>
                                       <CardContent className="space-y-2">
-                                        <p><strong>Número:</strong> {selectedOrder.orderNumber}</p>
-                                        <p><strong>Estado:</strong> {getStatusBadge(selectedOrder.status)}</p>
+                                        <p><strong>Number:</strong> {selectedOrder.orderNumber}</p>
+                                        <p><strong>Status:</strong> {getStatusBadge(selectedOrder.status)}</p>
                                         <p><strong>Total:</strong> ${selectedOrder.total}</p>
-                                        <p><strong>Método de Pago:</strong> {getPaymentMethodText(selectedOrder.paymentMethod)}</p>
-                                        <p><strong>Método de Envío:</strong> {getShippingMethodText(selectedOrder.shippingMethod)}</p>
-                                        <p><strong>Fecha:</strong> {new Date(selectedOrder.createdAt).toLocaleString('es-ES')}</p>
+                                        <p><strong>Payment Method:</strong> {getPaymentMethodText(selectedOrder.paymentMethod)}</p>
+                                        <p><strong>Shipping Method:</strong> {getShippingMethodText(selectedOrder.shippingMethod)}</p>
+                                        <p><strong>Date:</strong> {new Date(selectedOrder.createdAt).toLocaleString('en-US')}</p>
                                       </CardContent>
                                     </Card>
                                   </div>
@@ -250,7 +250,7 @@ export default function AdminOrdersPage() {
                                   {/* Order Items */}
                                   <Card>
                                     <CardHeader>
-                                      <CardTitle className="text-lg">Artículos del Pedido</CardTitle>
+                                      <CardTitle className="text-lg">Order Items</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                       <div className="space-y-4">
@@ -264,7 +264,7 @@ export default function AdminOrdersPage() {
                                             <div className="flex-1">
                                               <h4 className="font-medium">{item.name}</h4>
                                               <p className="text-sm text-gray-600">
-                                                {item.color} • {item.storage} • Cantidad: {item.quantity}
+                                                {item.color} • {item.storage} • Quantity: {item.quantity}
                                               </p>
                                             </div>
                                             <div className="text-right">

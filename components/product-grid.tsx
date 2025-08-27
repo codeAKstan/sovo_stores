@@ -24,7 +24,8 @@ interface Product {
   isSale: boolean
   quantityRemaining: number
   sold: number
-  createdAt?: string // Add this field
+  sortOrder?: number
+  createdAt?: string
 }
 
 export function ProductGrid() {
@@ -71,8 +72,15 @@ export function ProductGrid() {
           const aPriority = categoryPriority[a.category as keyof typeof categoryPriority] || 999
           const bPriority = categoryPriority[b.category as keyof typeof categoryPriority] || 999
           
-          // If same category, sort by creation date (newest first)
+          // If same category, sort by admin-defined sortOrder, then by creation date
           if (aPriority === bPriority) {
+            // Sort by sortOrder if available
+            if (a.sortOrder !== undefined && b.sortOrder !== undefined) {
+              return a.sortOrder - b.sortOrder
+            }
+            if (a.sortOrder !== undefined) return -1
+            if (b.sortOrder !== undefined) return 1
+            // Fallback to creation date (newest first)
             return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
           }
           

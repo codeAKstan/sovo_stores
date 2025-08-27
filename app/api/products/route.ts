@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       query = { category }
     }
     
-    let productsQuery = Product.find(query).sort({ createdAt: -1 })
+    let productsQuery = Product.find(query)
     
     if (limit) {
       productsQuery = productsQuery.limit(parseInt(limit))
@@ -24,10 +24,39 @@ export async function GET(request: NextRequest) {
     
     const products = await productsQuery
     
-    return NextResponse.json(
-      { products },
-      { status: 200 }
+    // Initialize sortOrder for products that don't have it
+    const productsWithSortOrder = await Promise.all(
+      products.map(async (product, index) => {
+        if (product.sortOrder === undefined || product.sortOrder === null) {
+          // Assign sortOrder based on creation date (newest first gets lower sortOrder)
+          const sortOrder = index
+          await Product.findByIdAndUpdate(product._id, { sortOrder })
+          return { ...product.toObject(), sortOrder }
+        }
+        return product.toObject()
+      })
     )
+    
+    // Sort products by sortOrder within each category
+    const sortedProducts = productsWithSortOrder.sort((a, b) => {
+      // If same category, sort by sortOrder first
+      if (a.category === b.category) {
+        if (a.sortOrder !== undefined && b.sortOrder !== undefined) {
+          return a.sortOrder - b.sortOrder
+        }
+        if (a.sortOrder !== undefined) return -1
+        if (b.sortOrder !== undefined) return 1
+        // Fallback to creation date (newest first)
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      }
+      // Different categories, maintain original order
+      return 0
+    })
+    
+    return NextResponse.json(
+       { products: sortedProducts },
+       { status: 200 }
+     )
   } catch (error) {
     console.error('Get products error:', error)
     return NextResponse.json(
