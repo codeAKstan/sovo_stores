@@ -1,6 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Menu, ShoppingCart, Search, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +16,26 @@ const defaultNav = [
 ]
 
 function SovoHeader({ navItems = defaultNav }) {
+  const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter()
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch(e as any)
+    }
+  }
+
   return (
     <header className="sticky top-0 z-50">
       <a
@@ -65,15 +87,18 @@ function SovoHeader({ navItems = defaultNav }) {
 
       {/* Search band */}
       <div className="bg-blue-800 px-4 py-3">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+        <form onSubmit={handleSearch} className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
           <Input
             type="search"
             placeholder="¿Qué andás buscando vos?"
             aria-label="Search Sovo stores"
+            value={searchQuery}
+            onChange={handleSearchInputChange}
+            onKeyPress={handleKeyPress}
             className="h-11 pl-11 pr-4 rounded-full bg-white text-base placeholder:text-muted-foreground"
           />
-        </div>
+        </form>
       </div>
 
       {/* Under-search nav (horizontal scroll), styled like the reference */}
