@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Heart, Star, ShoppingCart } from "lucide-react"
@@ -32,7 +32,7 @@ interface Product {
   createdAt?: string
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams()
   const query = searchParams.get('q') || ''
   const [products, setProducts] = useState<Product[]>([])
@@ -250,5 +250,37 @@ export default function SearchPage() {
       
       <Footer />
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <section className="bg-white border-b py-8">
+          <div className="container mx-auto px-4">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">Cargando...</h1>
+            <p className="text-gray-600">Preparando la búsqueda...</p>
+          </div>
+        </section>
+        <section className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <Card key={i} className="overflow-hidden">
+                <div className="aspect-square bg-gray-200 animate-pulse" />
+                <CardContent className="p-4">
+                  <div className="h-4 bg-gray-200 rounded animate-pulse mb-2" />
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-2/3" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+        <Footer />
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   )
 }
