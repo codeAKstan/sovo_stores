@@ -23,7 +23,7 @@ export default function WhatsAppWidget({
       {/* Mobile text div - visible only on mobile */}
       <div className="md:hidden mb-2 mr-2">
         <div className="bg-gray-800 text-white px-3 py-2 rounded-lg text-sm shadow-lg">
-          text here on whatsapp
+          escribinos por whatsapp para más información, maje
         </div>
       </div>
       
