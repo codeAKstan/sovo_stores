@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { MessageCircle } from 'lucide-react'
+import Image from 'next/image'
 
 interface WhatsAppWidgetProps {
   phoneNumber?: string
@@ -19,20 +19,19 @@ export default function WhatsAppWidget({
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      {/* Mobile text div - visible only on mobile */}
-      <div className="md:hidden mb-2 mr-2">
-        <div className="bg-gray-800 text-white px-3 py-2 rounded-lg text-sm shadow-lg">
-          escribinos por whatsapp
-        </div>
-      </div>
-      
+    <div className="fixed bottom-6 right-6 z-50">   
       <button
         onClick={handleWhatsAppClick}
-        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 group"
+        className=" text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 group"
         aria-label="Contact us on WhatsApp"
       >
-        <MessageCircle className="w-6 h-6" />
+        <Image 
+          src="/wa.png" 
+          alt="WhatsApp" 
+          width={64} 
+          height={64} 
+          className="w-12 h-12"
+        />
         {/* Desktop tooltip - hidden on mobile */}
         <span className="hidden md:block absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           text here if you have any questions
