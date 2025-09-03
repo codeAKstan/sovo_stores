@@ -10,7 +10,7 @@ interface WhatsAppWidgetProps {
 
 export default function WhatsAppWidget({ 
   phoneNumber = '+50371362203', // Default phone number - replace with actual
-  message = '¡Qué ondas! Me interesan sus productos, maje.'
+  message = ''
 }: WhatsAppWidgetProps) {
   const handleWhatsAppClick = () => {
     const encodedMessage = encodeURIComponent(message)
