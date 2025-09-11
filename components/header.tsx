@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Menu, ShoppingCart, Search, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,13 +38,26 @@ function SovoHeader({ navItems = defaultNav }) {
   }
 
   return (
-    <header className="relative z-50">
-      <a
-        href="#content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 bg-primary text-primary-foreground px-3 py-1 rounded"
-      >
-        Skip to content
-      </a>
+    <>
+      {/* Before header image */}
+      <div className="w-full bg-blue-600">
+        <Image
+          src="/before-header.png"
+          alt="Before header banner"
+          width={1200}
+          height={100}
+          className="w-full h-auto object-cover"
+          priority
+        />
+      </div>
+      
+      <header className="relative z-50">
+        <a
+          href="#content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 bg-primary text-primary-foreground px-3 py-1 rounded"
+        >
+          Skip to content
+        </a>
 
       {/* Top utility bar */}
       <div className="bg-gray-100 border-b px-4 py-2">
@@ -170,7 +184,7 @@ function SovoHeader({ navItems = defaultNav }) {
               </Link>
             ))}
             <div className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold whitespace-nowrap">
-              🎄 Decoración navideña
+              necesidad diaria
             </div>
             <Link href="/support" className="whitespace-nowrap px-3 py-3 hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-1">
               🏢 Centro de servicio
@@ -179,6 +193,7 @@ function SovoHeader({ navItems = defaultNav }) {
         </div>
       </nav>
     </header>
+    </>
   )
 }
 

@@ -306,6 +306,21 @@ export function ProductDetail({ productId }: ProductDetailProps) {
             </Button>
           </div>
 
+          {/* WhatsApp Purchase Button */}
+          <div className="w-full">
+            <Button
+              onClick={() => {
+                const message = `Hola! Me interesa comprar: ${product.name}${selectedColor ? ` - Color: ${selectedColor}` : ''}${selectedStorage ? ` - Almacenamiento: ${selectedStorage}` : ''} - Cantidad: ${quantity}`
+                const whatsappUrl = `https://wa.me/50371362203?text=${encodeURIComponent(message)}`
+                window.open(whatsappUrl, '_blank')
+              }}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center space-x-2"
+            >
+              <img src="/wa.png" alt="WhatsApp" className="w-6 h-6" />
+              <span>COMPRAR POR WHATSAPP</span>
+            </Button>
+          </div>
+
           {/* Fast Delivery Flier */}
           <div className="border-t pt-6">
             <div className="flex justify-center mb-6">

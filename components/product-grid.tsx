@@ -149,31 +149,37 @@ export function ProductGrid() {
             <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">¡Ofertas imperdibles!</h2>
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
-                <Image
-                  src="/banner1.jpeg"
-                  alt="Oferta Xiaomi Redmi Note 14"
-                  width={400}
-                  height={200}
-                  className="w-full h-full object-cover rounded-lg"
-                />
+                <Link href="/product/68a746aef852c4bb8d223cac">
+                  <Image
+                    src="/banner1.jpeg"
+                    alt="Iphone 11 promax"
+                    width={400}
+                    height={200}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Link>
               </div>
               <div className="flex-1">
-                <Image
-                  src="/banner2.jpeg"
-                  alt="Sala Seccional"
-                  width={400}
-                  height={200}
-                  className="w-full h-full object-cover rounded-lg"
-                />
+                <Link href="/product/68a758f64ab5a0e99d7d0ba8">
+                  <Image
+                    src="/banner2.jpeg"
+                    alt="Iphone 13 promax"
+                    width={400}
+                    height={200}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Link>
               </div>
               <div className="flex-1">
-                <Image
-                  src="/banner3.jpeg"
-                  alt="Cocina a gas"
-                  width={400}
-                  height={200}
-                  className="w-full h-full object-cover rounded-lg"
-                />
+                <Link href="/product/68a7567b4ab5a0e99d7d0ba0">
+                  <Image
+                    src="/banner3.jpeg"
+                    alt="Iphone 12 promax"
+                    width={400}
+                    height={200}
+                    className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                  />
+                </Link>
               </div>
             </div>
           </div>

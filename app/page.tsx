@@ -9,13 +9,13 @@ import { Footer } from "@/components/footer"
 import { ReviewsSection } from "@/components/reviews-section"
 import { PurchaseNotifications } from "@/components/purchase-notifications"
 import { Suspense } from "react"
+import Image from "next/image"
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <HeroSection />
-      <DeliverySection />
       <Suspense fallback={
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
@@ -31,6 +31,18 @@ export default function Home() {
           </div>
         </section>
       }>
+        <DeliverySection />
+        {/* After delivery image */}
+        <div className="w-full bg-blue-100">
+          <Image
+            src="/after.png"
+            alt="After delivery banner"
+            width={1200}
+            height={200}
+            className="w-full h-auto object-cover"
+            priority
+          />
+        </div>
         <ProductGrid />
       </Suspense>
       <ShippingGuaranteeSection />
