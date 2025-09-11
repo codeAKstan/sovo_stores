@@ -39,7 +39,7 @@ export function CartSidebar() {
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="text-xl font-bold text-gray-900">Shopping Cart ({totalItems})</h2>
+            <h2 className="text-xl font-bold text-gray-900">Carrito de Compras ({totalItems})</h2>
             <Button variant="ghost" size="sm" onClick={() => dispatch({ type: "CLOSE_CART" })} className="rounded-full">
               <X className="h-5 w-5" />
             </Button>
@@ -71,7 +71,7 @@ export function CartSidebar() {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-gray-900 truncate">{item.name}</h3>
                       {item.selectedColor && <p className="text-sm text-gray-500">Color: {item.selectedColor}</p>}
-                      {item.selectedStorage && <p className="text-sm text-gray-500">Storage: {item.selectedStorage}</p>}
+                      {item.selectedStorage && <p className="text-sm text-gray-500">Almacenamiento: {item.selectedStorage}</p>}
                       <div className="flex items-center space-x-2 mt-2">
                         <span className="font-bold text-gray-900">${item.price}</span>
                         <span className="text-sm text-gray-500 line-through">${item.originalPrice}</span>
@@ -111,7 +111,7 @@ export function CartSidebar() {
                   <span className="font-medium">${totalPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>You save:</span>
+                  <span>Te ahorras:</span>
                   <span className="font-medium">${totalSavings.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-2">

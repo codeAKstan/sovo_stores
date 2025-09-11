@@ -141,15 +141,55 @@ export function ProductGrid() {
   }
 
   return (
-    <section className="py-16 bg-white">
-      <div className="container mx-auto px-4">
-        {/* Header section */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Productos Destacados</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Descubre nuestra colección premium de iPhones, MacBooks y aparatos domésticos con precios inmejorables y calidad
-          </p>
+    <>
+      {/* Banner Section */}
+      <section className="py-4 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">¡Ofertas imperdibles!</h2>
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <Image
+                  src="/banner1.jpeg"
+                  alt="Oferta Xiaomi Redmi Note 14"
+                  width={400}
+                  height={200}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+              <div className="flex-1">
+                <Image
+                  src="/banner2.jpeg"
+                  alt="Sala Seccional"
+                  width={400}
+                  height={200}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+              <div className="flex-1">
+                <Image
+                  src="/banner3.jpeg"
+                  alt="Cocina a gas"
+                  width={400}
+                  height={200}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
         </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          {/* Header section */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Productos Destacados</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Descubre nuestra colección premium de iPhones, MacBooks y aparatos domésticos con precios inmejorables y calidad
+            </p>
+          </div>
 
         {/* Category filters */}
         <div className="flex justify-center mb-12">
@@ -198,12 +238,12 @@ export function ProductGrid() {
                     <div className="absolute top-4 left-4 flex flex-col space-y-2">
                       {product.isNew && (
                         <Badge className="bg-green-500 hover:bg-green-600 text-white">
-                          New
+                          Nuevo
                         </Badge>
                       )}
                       {product.isSale && (
                         <Badge className="bg-red-500 hover:bg-red-600 text-white">
-                          Sale
+                          En Oferta
                         </Badge>
                       )}
                     </div>
@@ -262,7 +302,7 @@ export function ProductGrid() {
                           ))}
                         </div>
                         <span className="text-sm text-gray-600">
-                          {product.rating} ({product.reviews} reviews)
+                          {product.rating} ({product.reviews} reseñas)
                         </span>
                       </div>
                     </div>
@@ -271,7 +311,7 @@ export function ProductGrid() {
                     {product.storage.length > 0 && (
                       <div className="mb-4">
                         <p className="text-sm text-gray-600 mb-2">
-                          {product.category === "Linea Blanca" ? "Capacity:" : "Storage:"}
+                          {product.category === "Linea Blanca" ? "Capacidad:" : "Almacenamiento:"}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           {product.storage.slice(0, 3).map((storage) => (
@@ -287,7 +327,7 @@ export function ProductGrid() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">Stock:</span>
+                          <span className="text-sm text-gray-600">Disponible:</span>
                           <div className="flex items-center space-x-1">
                             <span className={`text-sm font-medium ${
                               product.quantityRemaining < 10 ? "text-red-600" : "text-green-600"
@@ -296,13 +336,13 @@ export function ProductGrid() {
                             </span>
                             {product.quantityRemaining < 10 && (
                               <span className="text-xs text-red-600 font-medium">
-                                Limited Stock
+                                Agotado
                               </span>
                             )}
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-600">Sold:</span>
+                          <span className="text-sm text-gray-600">Vendidos:</span>
                           <span className="text-sm font-medium text-gray-900">{product.sold}</span>
                         </div>
                       </div>
@@ -317,7 +357,7 @@ export function ProductGrid() {
                         disabled={product.quantityRemaining === 0}
                       >
                         <ShoppingCart className="h-5 w-5" />
-                        <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Add to Cart"}</span>
+                        <span>{product.quantityRemaining === 0 ? "Agotado" : "Agregar al Carrito"}</span>
                       </Button>
                       
                       {/* Buy Now Button */}
@@ -327,7 +367,7 @@ export function ProductGrid() {
                           className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2"
                           disabled={product.quantityRemaining === 0}
                         >
-                          <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Buy Now"}</span>
+                          <span>{product.quantityRemaining === 0 ? "Agotado" : "Comprar Ahora"}</span>
                         </Button>
                       </Link>
                     </div>
@@ -430,5 +470,6 @@ export function ProductGrid() {
         )}
       </div>
     </section>
+    </>
   )
 }

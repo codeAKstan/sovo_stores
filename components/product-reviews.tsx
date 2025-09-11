@@ -116,7 +116,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   if (error) {
     return (
       <div className="mt-16 border-t pt-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">Reseñas de Clientes</h2>
         <div className="text-center py-8">
           <p className="text-gray-500">{error}</p>
         </div>
@@ -127,11 +127,11 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   if (!reviewsData || reviewsData.totalReviews === 0) {
     return (
       <div className="mt-16 border-t pt-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Reseñas de Clientes</h2>
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
-          <p className="text-gray-500">Be the first to review this product!</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay reseñas aún</h3>
+          <p className="text-gray-500">¡Ser el primero en revisar este producto!</p>
         </div>
       </div>
     )
@@ -141,11 +141,11 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
   return (
     <div className="mt-16 border-t pt-16">
-      <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-8">Reseñas de Clientes</h2>
       
       {/* Individual Reviews */}
       <div className="space-y-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6">Customer Feedback</h3>
+        <h3 className="text-xl font-semibold text-gray-900 mb-6">Reseñas de Clientes</h3>
         
         {displayedReviews.map((review) => (
           <Card key={review._id} className="border border-gray-200">
@@ -205,7 +205,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                   <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-gray-100">
                     <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
                       <ThumbsUp className="h-4 w-4 mr-1" />
-                      Helpful
+                      Me gusta
                     </Button>
                   </div>
                 </div>
@@ -223,8 +223,8 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               className="px-8"
             >
               {showAllReviews 
-                ? `Show Less Reviews` 
-                : `Show All ${reviewsData.totalReviews} Reviews`
+                ? `Mostrar menos reseñas` 
+                : `Mostrar todas ${reviewsData.totalReviews} reseñas`
               }
             </Button>
           </div>
@@ -235,7 +235,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
         {/* Overall Rating */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Overall Rating</CardTitle>
+            <CardTitle className="text-lg">Calificación Promedio</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-4 mb-6">
@@ -247,7 +247,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
                   {renderStars(reviewsData.averageRating, 'lg')}
                 </div>
                 <p className="text-sm text-gray-600">
-                  Based on {reviewsData.totalReviews} review{reviewsData.totalReviews !== 1 ? 's' : ''}
+                  Basado en {reviewsData.totalReviews} reseña{reviewsData.totalReviews !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>

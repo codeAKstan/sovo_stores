@@ -170,12 +170,12 @@ export function ProductDetail({ productId }: ProductDetailProps) {
               </Badge>
               {product.isNew && (
                 <Badge className="bg-green-100 text-green-800 text-xs">
-                  New
+                  Nuevo
                 </Badge>
               )}
               {product.isSale && (
                 <Badge variant="destructive" className="text-xs">
-                  Sale
+                  En Oferta
                 </Badge>
               )}
             </div>
@@ -205,7 +205,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
                 ))}
               </div>
               <span className="text-gray-600">
-                {product.rating} ({product.reviews} reviews)
+                {product.rating} ({product.reviews} reseñas)
               </span>
             </div>
           </div>
@@ -213,7 +213,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           {/* Description */}
           {product.description && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Descripción</h3>
               <p className="text-gray-600">{product.description}</p>
             </div>
           )}
@@ -221,7 +221,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           {/* Color Selection */}
           {product.colors.length > 0 && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">Color</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Colores</h3>
               <div className="flex flex-wrap gap-3">
                 {product.colors.map((color) => (
                   <button
@@ -243,7 +243,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           {/* Storage Selection */}
           {product.storage.length > 0 && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">{storageLabel}</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">Almacenamiento</h3>
               <div className="flex flex-wrap gap-3">
                 {product.storage.map((storage) => (
                   <button
@@ -264,7 +264,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
 
           {/* Quantity */}
           <div>
-            <h3 className="font-semibold text-gray-900 mb-3">Quantity</h3>
+            <h3 className="font-semibold text-gray-900 mb-3">Cantidad</h3>
             <div className="flex items-center space-x-4">
               <div className="flex items-center border border-gray-300 rounded-lg">
                 <button
@@ -282,7 +282,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
                 </button>
               </div>
               <span className="text-sm text-gray-600">
-                {product.quantityRemaining} available
+                {product.quantityRemaining} disponibles
               </span>
             </div>
           </div>
@@ -295,7 +295,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center space-x-2"
             >
               <ShoppingCart className="h-5 w-5" />
-              <span>{product.quantityRemaining === 0 ? "Out of Stock" : "Add to Cart"}</span>
+              <span>{product.quantityRemaining === 0 ? "Sin Stock" : "Agregar al Carrito"}</span>
             </Button>
             <Button
               variant="outline"
@@ -322,7 +322,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           {/* Features */}
           {product.features && product.features.length > 0 && (
             <div className="border-t pt-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Key Features</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">Características</h3>
               <ul className="space-y-2">
                 {product.features.map((feature, index) => (
                   <li key={index} className="flex items-start space-x-2">
@@ -338,15 +338,15 @@ export function ProductDetail({ productId }: ProductDetailProps) {
           <div className="border-t pt-6 space-y-4">
             <div className="flex items-center space-x-3">
               <Truck className="h-5 w-5 text-green-600" />
-              <span className="text-gray-600">Free shipping on orders over $50</span>
+              <span className="text-gray-600">Envío Gratis en Órdenes Sobre $50</span>
             </div>
             <div className="flex items-center space-x-3">
               <Shield className="h-5 w-5 text-blue-600" />
-              <span className="text-gray-600">1-year warranty included</span>
+              <span className="text-gray-600">Garantía de 1 Año Incluida</span>
             </div>
             <div className="flex items-center space-x-3">
               <RotateCcw className="h-5 w-5 text-purple-600" />
-              <span className="text-gray-600">30-day return policy</span>
+              <span className="text-gray-600">Política de Devolución de 30 Días</span>
             </div>
           </div>
         </div>
@@ -355,7 +355,7 @@ export function ProductDetail({ productId }: ProductDetailProps) {
       {/* Specifications */}
       {product.specifications && (
         <div className="mt-16 border-t pt-16">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Technical Specifications</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-8">Especificaciones Técnicas</h2>
           <div className="grid md:grid-cols-2 gap-6">
             {Array.isArray(product.specifications) ? (
               product.specifications.map((spec, index) => (

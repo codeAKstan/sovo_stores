@@ -37,7 +37,7 @@ function SovoHeader({ navItems = defaultNav }) {
   }
 
   return (
-    <header className="sticky top-0 z-50">
+    <header className="relative z-50">
       <a
         href="#content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 bg-primary text-primary-foreground px-3 py-1 rounded"
@@ -45,86 +45,137 @@ function SovoHeader({ navItems = defaultNav }) {
         Skip to content
       </a>
 
-      {/* Top bar: menu, brand, cart */}
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Open menu">
-              <Menu className="h-6 w-6" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-80">
-            <SheetHeader>
-              <SheetTitle>navegar</SheetTitle>
-            </SheetHeader>
-            <nav className="mt-4 grid gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
-                >
-                  <span className="text-sm">{item.label}</span>
-                  {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
-                </Link>
-              ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
-
-        <Link href="/" className="inline-flex items-center gap-2" aria-label="Sovo stores home">
-          <span className="text-xl font-extrabold tracking-tight">
-            Sovo <span className="text-blue-700">stores</span>
-          </span>
-        </Link>
-
-        <Link href="/cart" aria-label="Open cart">
-          <Button variant="ghost" size="icon">
-            <ShoppingCart className="h-6 w-6" />
-          </Button>
-        </Link>
-      </div>
-
-      {/* Search band */}
-      <div className="bg-blue-800 px-4 py-3">
-        <form onSubmit={handleSearch} className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-          <Input
-            type="search"
-            placeholder="¿Qué andás buscando vos?"
-            aria-label="Search Sovo stores"
-            value={searchQuery}
-            onChange={handleSearchInputChange}
-            onKeyPress={handleKeyPress}
-            className="h-11 pl-11 pr-4 rounded-full bg-white text-base placeholder:text-muted-foreground"
-          />
-        </form>
-      </div>
-
-      {/* Under-search nav (horizontal scroll), styled like the reference */}
-      <nav aria-label="Primary" className="bg-slate-900 text-white/90 text-sm">
-        <div
-          className="flex items-center gap-6 px-3 py-2 overflow-x-auto whitespace-nowrap
-                     [-ms-overflow-style:none] [scrollbar-width:none]
-                     [&::-webkit-scrollbar]:hidden"
-        >
-          {navItems.map((item) => (
-            <Link 
-              key={item.label} 
-              href={item.href} 
-              className="inline-flex items-center gap-1 hover:text-white hover:bg-slate-800 
-                         px-3 py-2 rounded-md transition-all duration-200 hover:scale-105
-                         group relative"
-              title={item.description}
-            >
-              <span className="font-medium">{item.label}</span>
-              {item.caret ? (
-                <ChevronDown className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
-              ) : null}
-              {/* Subtle glow effect on hover */}
-              <div className="absolute inset-0 bg-blue-500/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity -z-10" />
+      {/* Top utility bar */}
+      <div className="bg-gray-100 border-b px-4 py-2">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-4 text-gray-600">
+            <span>Mi Cuenta</span>
+            <span>👤</span>
+            <Link href="/cart" className="flex items-center gap-1">
+              <span>Mi carrito</span>
+              <ShoppingCart className="h-4 w-4" />
             </Link>
-          ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main header with logo and search */}
+      <div className="bg-white px-4 py-4">
+        <div className="flex items-center justify-between gap-4">
+          {/* Mobile menu */}
+          <Sheet>
+            {/* <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger> */}
+            <SheetContent side="left" className="w-80">
+              <SheetHeader>
+                <SheetTitle>navegar</SheetTitle>
+              </SheetHeader>
+              <nav className="mt-4 grid gap-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
+                  >
+                    <span className="text-sm">{item.label}</span>
+                    {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2" aria-label="Sovo stores home">
+            <div className="bg-yellow-400 rounded-full p-2">
+              <span className="text-2xl">☀️</span>
+            </div>
+            <span className="text-2xl font-bold text-yellow-600">
+              sovo <span className="text-black">stores</span>
+            </span>
+          </Link>
+
+          {/* Search bar */}
+          <div className="flex-1 max-w-2xl mx-4">
+            <form onSubmit={handleSearch} className="relative">
+              <Input
+                type="search"
+                placeholder="¿Qué está buscando?"
+                aria-label="Search Sovo stores"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                onKeyPress={handleKeyPress}
+                className="h-12 pr-12 rounded-lg border-2 border-gray-300 text-base placeholder:text-gray-500"
+              />
+              <Button 
+                type="submit"
+                size="icon"
+                className="absolute right-1 top-1 h-10 w-10 bg-blue-600 hover:bg-blue-700"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation bar */}
+      <nav aria-label="Primary" className="bg-blue-700 text-white">
+        <div className="flex items-center px-4">
+          {/* Categories button */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-3 rounded-none flex items-center gap-2">
+                <Menu className="h-5 w-5" />
+                <span className="font-medium">CATEGORÍAS</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-80">
+              <SheetHeader>
+                <SheetTitle>Categorías</SheetTitle>
+              </SheetHeader>
+              <nav className="mt-4 grid gap-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
+                  >
+                    <span className="text-sm">{item.label}</span>
+                    {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+
+          {/* Promotional badge */}
+          <div className="bg-yellow-400 text-black px-3 py-1 mx-2 rounded text-sm font-bold">
+            Promociones
+          </div>
+
+          {/* Navigation items */}
+          <div className="flex items-center gap-6 overflow-x-auto">
+            {navItems.map((item) => (
+              <Link 
+                key={item.label} 
+                href={item.href} 
+                className="whitespace-nowrap px-3 py-3 hover:bg-blue-600 transition-colors text-sm font-medium"
+                title={item.description}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold whitespace-nowrap">
+              🎄 Decoración navideña
+            </div>
+            <Link href="/support" className="whitespace-nowrap px-3 py-3 hover:bg-blue-600 transition-colors text-sm font-medium flex items-center gap-1">
+              🏢 Centro de servicio
+            </Link>
+          </div>
         </div>
       </nav>
     </header>
