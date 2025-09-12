@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
 import { DeliverySection } from "@/components/delivery-section"
+import { BannerSection } from "@/components/banner-section"
 import { ProductGrid } from "@/components/product-grid"
 import { CartSidebar } from "@/components/cart-sidebar"
 import { FeaturesSection } from "@/components/features-section"
@@ -31,8 +32,6 @@ export default function Home() {
           </div>
         </section>
       }>
-        <DeliverySection />
-        {/* After delivery image */}
         <div className="w-full bg-blue-600">
           <Image
             src="/before.png"
@@ -41,8 +40,10 @@ export default function Home() {
             height={200}
             className="w-full h-auto object-cover"
             priority
-          />
+            />
         </div>
+        <BannerSection />
+        <DeliverySection />
         <ProductGrid />
       </Suspense>
       <ShippingGuaranteeSection />
