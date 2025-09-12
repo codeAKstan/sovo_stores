@@ -42,7 +42,7 @@ function SovoHeader({ navItems = defaultNav }) {
       {/* Before header image */}
       <div className="w-full bg-blue-600">
         <Image
-          src="/before-header.png"
+          src="/after.png"
           alt="Before header banner"
           width={1200}
           height={100}
@@ -60,7 +60,7 @@ function SovoHeader({ navItems = defaultNav }) {
         </a>
 
       {/* Top utility bar */}
-      <div className="bg-gray-100 border-b px-4 py-2">
+      <div className="hidden md:block bg-gray-100 border-b px-4 py-2">
         <div className="flex items-center justify-between text-sm">
           <div className="flex items-center gap-4 text-gray-600">
             <span>Mi Cuenta</span>
@@ -74,46 +74,57 @@ function SovoHeader({ navItems = defaultNav }) {
       </div>
 
       {/* Main header with logo and search */}
-      <div className="bg-white px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
-          {/* Mobile menu */}
-          <Sheet>
-            {/* <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
-                <Menu className="h-6 w-6" />
+      <div className="bg-white">
+        {/* Mobile header layout */}
+        <div className="md:hidden">
+          {/* Top bar with menu, logo, and cart */}
+          <div className="flex items-center justify-between px-4 py-3 border-b">
+            {/* Mobile menu */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Open menu">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-80">
+                <SheetHeader>
+                  <SheetTitle>navegar</SheetTitle>
+                </SheetHeader>
+                <nav className="mt-4 grid gap-1">
+                  {navItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
+                    >
+                      <span className="text-sm">{item.label}</span>
+                      {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
+                    </Link>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2" aria-label="Sovo stores home">
+              <div className="bg-yellow-400 rounded-full p-1.5">
+                <span className="text-lg">☀️</span>
+              </div>
+              <span className="text-lg font-bold text-yellow-600">
+                sovo <span className="text-black">stores</span>
+              </span>
+            </Link>
+
+            {/* Cart icon */}
+            <Link href="/cart" aria-label="Shopping cart">
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-6 w-6" />
               </Button>
-            </SheetTrigger> */}
-            <SheetContent side="left" className="w-80">
-              <SheetHeader>
-                <SheetTitle>navegar</SheetTitle>
-              </SheetHeader>
-              <nav className="mt-4 grid gap-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
-                  >
-                    <span className="text-sm">{item.label}</span>
-                    {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
-                  </Link>
-                ))}
-              </nav>
-            </SheetContent>
-          </Sheet>
+            </Link>
+          </div>
 
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2" aria-label="Sovo stores home">
-            <div className="bg-yellow-400 rounded-full p-2">
-              <span className="text-2xl">☀️</span>
-            </div>
-            <span className="text-2xl font-bold text-yellow-600">
-              sovo <span className="text-black">stores</span>
-            </span>
-          </Link>
-
-          {/* Search bar */}
-          <div className="flex-1 max-w-2xl mx-4">
+          {/* Search bar below */}
+          <div className="px-4 py-3 bg-blue-600">
             <form onSubmit={handleSearch} className="relative">
               <Input
                 type="search"
@@ -122,22 +133,59 @@ function SovoHeader({ navItems = defaultNav }) {
                 value={searchQuery}
                 onChange={handleSearchInputChange}
                 onKeyPress={handleKeyPress}
-                className="h-12 pr-12 rounded-lg border-2 border-gray-300 text-base placeholder:text-gray-500"
+                className="h-12 pr-12 rounded-full border-0 text-base placeholder:text-gray-500 bg-white"
               />
               <Button 
                 type="submit"
                 size="icon"
-                className="absolute right-1 top-1 h-10 w-10 bg-blue-600 hover:bg-blue-700"
+                className="absolute right-1 top-1 h-10 w-10 bg-blue-600 hover:bg-blue-700 rounded-full"
               >
                 <Search className="h-5 w-5" />
               </Button>
             </form>
           </div>
         </div>
+
+        {/* Desktop header layout */}
+        <div className="hidden md:block px-4 py-4">
+          <div className="flex items-center justify-between gap-4">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2" aria-label="Sovo stores home">
+              <div className="bg-yellow-400 rounded-full p-2">
+                <span className="text-2xl">☀️</span>
+              </div>
+              <span className="text-2xl font-bold text-yellow-600">
+                sovo <span className="text-black">stores</span>
+              </span>
+            </Link>
+
+            {/* Search bar */}
+            <div className="flex-1 max-w-2xl mx-4">
+              <form onSubmit={handleSearch} className="relative">
+                <Input
+                  type="search"
+                  placeholder="¿Qué está buscando?"
+                  aria-label="Search Sovo stores"
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
+                  onKeyPress={handleKeyPress}
+                  className="h-12 pr-12 rounded-lg border-2 border-gray-300 text-base placeholder:text-gray-500"
+                />
+                <Button 
+                  type="submit"
+                  size="icon"
+                  className="absolute right-1 top-1 h-10 w-10 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Navigation bar */}
-      <nav aria-label="Primary" className="bg-blue-700 text-white">
+      {/* Navigation bar - hidden on mobile */}
+      <nav aria-label="Primary" className="hidden md:block bg-blue-700 text-white">
         <div className="flex items-center px-4">
           {/* Categories button */}
           <Sheet>

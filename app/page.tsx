@@ -33,9 +33,9 @@ export default function Home() {
       }>
         <DeliverySection />
         {/* After delivery image */}
-        <div className="w-full bg-blue-100">
+        <div className="w-full bg-blue-600">
           <Image
-            src="/after.png"
+            src="/before.png"
             alt="After delivery banner"
             width={1200}
             height={200}

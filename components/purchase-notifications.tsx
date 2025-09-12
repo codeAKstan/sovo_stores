@@ -26,7 +26,7 @@ const PRODUCTS = [
 ]
 
 const ACTIONS = [
-  'just bought', 'received their', 'product shipped for', 'order confirmed for'
+  'compró', 'recibió sus', 'producto se envió para', 'orden confirmada para'
 ]
 
 const LOCATIONS = [
@@ -95,7 +95,7 @@ export function PurchaseNotifications() {
               <div className="flex items-center space-x-2 mb-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-gray-900">
-                  Recent Purchase
+                  Compra Reciente
                 </span>
               </div>
               <p className="text-sm text-gray-700">
@@ -106,7 +106,7 @@ export function PurchaseNotifications() {
                 📍 {notification.location}, El Salvador
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                {new Date().toLocaleTimeString()} • Verified Purchase
+                {new Date().toLocaleTimeString()} • Compra Reciente
               </p>
             </div>
             <button
