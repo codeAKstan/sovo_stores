@@ -86,7 +86,7 @@ export default function TrackOrders() {
                 <div>
                   <label className="text-sm font-medium mb-1 block">Order Number</label>
                   <Input 
-                    placeholder="SO-2024-XXXXXX" 
+                    placeholder="RR123456789SV" 
                     value={trackingForm.orderNumber}
                     onChange={(e) => setTrackingForm(prev => ({...prev, orderNumber: e.target.value}))}
                     required

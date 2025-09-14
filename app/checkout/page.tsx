@@ -133,8 +133,8 @@ export default function CheckoutPage() {
   }
 
   const handlePlaceOrder = async () => {
-    // Generate a random order number
-    const orderNumber = `SO-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
+    // Generate a random tracking number with RR...SV format
+    const orderNumber = `RR${Math.random().toString(36).substr(2, 9).toUpperCase()}SV`
     
     // Get product names from cart items
     const productNames = state.items.map(item => item.name).join(', ')
