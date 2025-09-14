@@ -40,7 +40,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const [reviewsData, setReviewsData] = useState<ReviewsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showAllReviews, setShowAllReviews] = useState(false)
+
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -137,8 +137,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     )
   }
 
-  const displayedReviews = showAllReviews ? reviewsData.reviews : reviewsData.reviews.slice(0, 3)
-
   return (
     <div className="mt-16 border-t pt-16">
       <h2 className="text-2xl font-bold text-gray-900 mb-8">Reseñas de Clientes</h2>
@@ -147,7 +145,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       <div className="space-y-6">
         <h3 className="text-xl font-semibold text-gray-900 mb-6">Reseñas de Clientes</h3>
         
-        {displayedReviews.map((review) => (
+        {reviewsData.reviews.map((review) => (
           <Card key={review._id} className="border border-gray-200">
             <CardContent className="p-6">
               <div className="flex items-start space-x-4">
@@ -213,22 +211,7 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
             </CardContent>
           </Card>
         ))}
-        
-        {/* Show More/Less Button */}
-        {reviewsData.reviews.length > 3 && (
-          <div className="text-center pt-6">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowAllReviews(!showAllReviews)}
-              className="px-8"
-            >
-              {showAllReviews 
-                ? `Mostrar menos reseñas` 
-                : `Mostrar todas ${reviewsData.totalReviews} reseñas`
-              }
-            </Button>
-          </div>
-        )}
+
       </div>
       {/* Reviews Summary */}
       <div className="grid md:grid-cols-2 gap-8 mb-12">
