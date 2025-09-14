@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Menu, ShoppingCart, Search, ChevronDown } from "lucide-react"
+import { Menu, ShoppingCart, Search, ChevronDown, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
@@ -18,7 +18,38 @@ const defaultNav = [
 
 function SovoHeader({ navItems = defaultNav }) {
   const [searchQuery, setSearchQuery] = useState("")
+  const [loadingNavItem, setLoadingNavItem] = useState<string | null>(null)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const router = useRouter()
+
+  const handleNavigation = async (href: string, label: string) => {
+    setLoadingNavItem(label)
+    setIsSheetOpen(false) // Close the mobile menu
+    // Show loader for a brief moment to provide visual feedback
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    // Check if this is a category navigation
+    const url = new URL(href, window.location.origin)
+    const category = url.searchParams.get('category')
+    
+    if (category && (category === 'iPhone' || category === 'MacBook' || category === 'Linea Blanca')) {
+      // Navigate to homepage first
+      router.push('/')
+      
+      // Wait for navigation to complete, then scroll to the product section
+      setTimeout(() => {
+        const productSection = document.querySelector('#featured-products')
+        if (productSection) {
+          productSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+        setLoadingNavItem(null)
+      }, 1000)
+    } else {
+      // Regular navigation
+      router.push(href)
+      setLoadingNavItem(null)
+    }
+  }
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -39,6 +70,17 @@ function SovoHeader({ navItems = defaultNav }) {
 
   return (
     <>
+      {/* Full Screen Loading Overlay */}
+      {loadingNavItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg p-8 flex flex-col items-center space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+            <p className="text-lg font-medium text-gray-900">Cargando...</p>
+            <p className="text-sm text-gray-600">Navegando a {loadingNavItem}</p>
+          </div>
+        </div>
+      )}
+      
       {/* Before header image */}
       <div className="w-full bg-blue-600">
         <Image
@@ -80,7 +122,7 @@ function SovoHeader({ navItems = defaultNav }) {
           {/* Top bar with menu, logo, and cart */}
           <div className="flex items-center justify-between px-4 py-3 border-b">
             {/* Mobile menu */}
-            <Sheet>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Open menu">
                   <Menu className="h-6 w-6" />
@@ -92,14 +134,17 @@ function SovoHeader({ navItems = defaultNav }) {
                 </SheetHeader>
                 <nav className="mt-4 grid gap-1">
                   {navItems.map((item) => (
-                    <Link
+                    <button
                       key={item.label}
-                      href={item.href}
-                      className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent"
+                      onClick={() => handleNavigation(item.href, item.label)}
+                      disabled={loadingNavItem !== null}
+                      className="flex items-center justify-between rounded px-2 py-2 hover:bg-accent disabled:opacity-50 text-left w-full"
                     >
                       <span className="text-sm">{item.label}</span>
-                      {item.caret ? <ChevronDown className="h-4 w-4 opacity-70" /> : null}
-                    </Link>
+                      {item.caret && (
+                        <ChevronDown className="h-4 w-4 opacity-70" />
+                      )}
+                    </button>
                   ))}
                 </nav>
               </SheetContent>

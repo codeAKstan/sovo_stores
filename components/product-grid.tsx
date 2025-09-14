@@ -145,7 +145,7 @@ export function ProductGrid() {
 
 
       {/* Featured Products Section */}
-      <section className="py-16 bg-white">
+      <section id="featured-products" className="py-16 bg-white">
         <div className="container mx-auto px-4">
           {/* Header section */}
           <div className="text-center mb-12">
