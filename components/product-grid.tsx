@@ -37,7 +37,7 @@ export function ProductGrid() {
   const [loading, setLoading] = useState(true)
   const { dispatch } = useCart()
 
-  const categories = ["iPhone", "MacBook", "Linea Blanca"]
+  const categories = ["iPhone", "MacBook", "Linea Blanca", "Apple Watch"]
 
   // Update selected category when URL parameter changes
   useEffect(() => {
@@ -61,12 +61,13 @@ export function ProductGrid() {
       if (response.ok) {
         const data = await response.json()
         
-        // Sort products by category priority: iPhone first, then MacBook, then Linea Blanca
+        // Sort products by category priority: iPhone first, then MacBook, then Linea Blanca, then Apple Watch
         const sortedProducts = data.products.sort((a: Product, b: Product) => {
           const categoryPriority = {
             'iPhone': 1,
             'MacBook': 2,
-            'Linea Blanca': 3
+            'Linea Blanca': 3,
+            'Apple Watch': 4
           }
           
           const aPriority = categoryPriority[a.category as keyof typeof categoryPriority] || 999
@@ -186,6 +187,7 @@ export function ProductGrid() {
               const iPhoneProducts = products.filter(product => product.category === "iPhone")
               const macBookProducts = products.filter(product => product.category === "MacBook")
               const lineaBlancaProducts = products.filter(product => product.category === "Linea Blanca")
+              const appleWatchProducts = products.filter(product => product.category === "Apple Watch")
               
               const renderProductCard = (product: Product) => (
                 <div key={product._id} className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
@@ -425,6 +427,11 @@ export function ProductGrid() {
               
               // 4. Add Linea Blanca products last
               lineaBlancaProducts.forEach(product => {
+                allItems.push(renderProductCard(product))
+              })
+
+              // 5. Add Apple Watch products last
+              appleWatchProducts.forEach(product => {
                 allItems.push(renderProductCard(product))
               })
               

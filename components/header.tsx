@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 const defaultNav = [
   { label: "📱 Celulares", caret: true, href: "/?category=iPhone", description: "Los últimos teléfonos y accesorios" },
   { label: "💻 Laptops", caret: true, href: "/?category=MacBook", description: "Computadoras de primera" },
+  { label: "⌚ Apple Watch", caret: true, href: "/?category=Apple Watch", description: "Smartwatches y accesorios" },
   { label: "🏠 Línea Blanca", caret: true, href: "/?category=Linea Blanca", description: "Refris, lavadoras y más chunches" },
   { label: "🎮 Gaming", caret: true, href: "/gaming", description: "Consolas, PCs y chunches para jugar" },
 ]
@@ -32,7 +33,7 @@ function SovoHeader({ navItems = defaultNav }) {
     const url = new URL(href, window.location.origin)
     const category = url.searchParams.get('category')
     
-    if (category && (category === 'iPhone' || category === 'MacBook' || category === 'Linea Blanca')) {
+    if (category && (category === 'iPhone' || category === 'MacBook' || category === 'Linea Blanca' || category === 'Apple Watch')) {
       // Navigate to homepage first
       router.push('/')
       

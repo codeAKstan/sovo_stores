@@ -451,6 +451,7 @@ export default function ProductsManagementPage() {
               <SelectItem value="iPhone">iPhone</SelectItem>
               <SelectItem value="MacBook">MacBook</SelectItem>
               <SelectItem value="Linea Blanca">Linea Blanca</SelectItem>
+              <SelectItem value="Apple Watch">Apple Watch</SelectItem>
               <SelectItem value="Gaming">Gaming</SelectItem>
               <SelectItem value="Accessories">Accessories</SelectItem>
             </SelectContent>
@@ -670,6 +671,7 @@ export default function ProductsManagementPage() {
                       <SelectItem value="iPhone">iPhone</SelectItem>
                       <SelectItem value="MacBook">MacBook</SelectItem>
                       <SelectItem value="Linea Blanca">Linea Blanca</SelectItem>
+                      <SelectItem value="Apple Watch">Apple Watch</SelectItem>
                       <SelectItem value="Gaming">Gaming</SelectItem>
                       <SelectItem value="Accessories">Accessories</SelectItem>
                     </SelectContent>
