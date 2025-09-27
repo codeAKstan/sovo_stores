@@ -32,7 +32,7 @@ html {
         <script type="text/javascript" dangerouslySetInnerHTML={{
           __html: `
             var _smartsupp = _smartsupp || {};
-            _smartsupp.key = '19d40fc20bbf1a8046ba22b7343d9e5750d827ba';
+            _smartsupp.key = '74ec5102a00154eecc18463cb2fe77ad4cc844b6';
             window.smartsupp||(function(d) {
               var s,c,o=smartsupp=function(){ o._.push(arguments)};o._=[];
               s=d.getElementsByTagName('script')[0];c=d.createElement('script');
