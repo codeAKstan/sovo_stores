@@ -9,8 +9,8 @@ import "./globals.css"
 
 export const metadata: Metadata = {
   title: "Sovo Stores - Premium iPhones & MacBooks",
-  description: "Your premium destination for iPhones and MacBooks with unbeatable deals",
-  generator: "v0.dev",
+  description: "Tu destino premium para iPhones y MacBooks con ofertas inigualables",
+  generator: "codeakstan",
 }
 
 export default function RootLayout({
