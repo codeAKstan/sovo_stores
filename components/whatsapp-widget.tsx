@@ -9,7 +9,7 @@ interface WhatsAppWidgetProps {
 }
 
 export default function WhatsAppWidget({ 
-  phoneNumber = '+50371362203', // Default phone number - replace with actual
+  phoneNumber = '+1 (812) 802-3467', // Default phone number - replace with actual
   message = ''
 }: WhatsAppWidgetProps) {
   const handleWhatsAppClick = () => {
