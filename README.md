@@ -28,3 +28,13 @@ Continue building your app on:
 2. Deploy your chats from the v0 interface
 3. Changes are automatically pushed to this repository
 4. Vercel deploys the latest version from this repository
+
+## Maintenance mode
+
+- Set `MAINTENANCE_MODE` in your environment to control access.
+- When enabled, requests are redirected to `/maintenance` except for `/_next`, `/favicon*`, `/maintenance`, `/api/*`, `/admin/*`.
+- Example:
+
+```
+MAINTENANCE_MODE=true
+```
